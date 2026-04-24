@@ -196,11 +196,13 @@
   font-size: 24px;
   font-weight: 700;
   text-align: center;
+  margin: 0 0 0 8px;
 }
 
 .empty {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding-top: 10px;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 35px;
 }
