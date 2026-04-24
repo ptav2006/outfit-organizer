@@ -182,3 +182,11 @@
     border-right-color: var(--border);
   }
 }
+
+.form-title {
+  color: #200529;
+  font-size: 32px;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 24px;
+}

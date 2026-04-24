@@ -114,7 +114,7 @@ export default function App() {
 
         <main className="layout">
           <section className="panel">
-            <h2>Novo outfit</h2>
+            <h2 className="form-title">Novo outfit</h2>
 
             <form onSubmit={addOutfit}>
               <input
