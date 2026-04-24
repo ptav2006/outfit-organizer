@@ -101,7 +101,7 @@ export default function App() {
         <header className="hero">
           <div>
             <p className="tag">STYLE PLANNER</p>
-            <h1>Organizador de Outfits Masculinos</h1>
+            <h1>Organizador de Outfits</h1>
             <p className="subtitle">
               Guarda combinações, planeia looks e organiza as tuas peças por ocasião, estilo e data.
             </p>
