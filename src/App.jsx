@@ -377,6 +377,7 @@ input, select {
   font-size: 15px;
   outline: none;
   background: white;
+  color: #0f172a;
 }
 
 input:focus, select:focus {
