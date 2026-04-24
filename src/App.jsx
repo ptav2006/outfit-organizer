@@ -7,7 +7,24 @@ const categories = [
   "Relógio", "Cinto", "Mochila", "Acessório"
 ];
 
-const styles = ["Casual", "Formal", "Streetwear", "Universidade", "Trabalho", "Saída", "Viagem", "Ginásio"];
+const outfitStyles = [
+  "Casual",
+  "Formal",
+  "Streetwear",
+  "Smart Casual",
+  "Desportivo",
+  "Minimalista"
+];
+
+const outfitFunctions = [
+  "Universidade",
+  "Trabalho",
+  "Saída",
+  "Evento",
+  "Viagem",
+  "Ginásio",
+  "Outro"
+];
 
 export default function App() {
   const [outfits, setOutfits] = useState(() => {
@@ -19,9 +36,9 @@ export default function App() {
 
   const [form, setForm] = useState({
     title: "",
-    occasion: "",
-    date: "",
     style: "Casual",
+    function: "Universidade",
+    customFunction: "",
     image: "",
     pieces: [{ name: "", category: "T-shirt", color: "" }]
   });
@@ -65,8 +82,8 @@ export default function App() {
 
     setForm({
       title: "",
-      occasion: "",
-      date: "",
+      function: "Universidade",
+      customFunction: "",
       style: "Casual",
       image: "",
       pieces: [{ name: "", category: "T-shirt", color: "" }]
@@ -124,28 +141,31 @@ export default function App() {
               />
 
               <div className="grid2">
-                <input
-                  placeholder="Ocasião"
-                  value={form.occasion}
-                  onChange={e => setForm({ ...form, occasion: e.target.value })}
-                />
-
-                <input
-                  type="date"
-                  value={form.date}
-                  onChange={e => setForm({ ...form, date: e.target.value })}
-                />
-              </div>
-
               <select
                 value={form.style}
                 onChange={e => setForm({ ...form, style: e.target.value })}
               >
-                {styles.map(s => <option key={s}>{s}</option>)}
+                {outfitStyles.map(s => <option key={s}>{s}</option>)}
               </select>
 
+              <select
+                value={form.function}
+                onChange={e => setForm({ ...form, function: e.target.value })}
+              >
+                {outfitFunctions.map(f => <option key={f}>{f}</option>)}
+              </select>
+              </div>
+
+            {form.function === "Outro" && (
+              <input
+                placeholder="Escreve para que é o outfit"
+                value={form.customFunction}
+                onChange={e => setForm({ ...form, customFunction: e.target.value })}
+              />
+            )}
+
               <label className="upload">
-                {form.image ? "Imagem escolhida ✅" : "Adicionar fotografia do outfit"}
+                {form.image ? "Imagem escolhida ✅" : "Adicionar Fotografia"}
                 <input type="file" accept="image/*" onChange={handleImage} />
               </label>
 
@@ -206,7 +226,7 @@ export default function App() {
 
               <select value={filter} onChange={e => setFilter(e.target.value)}>
                 <option>Todos</option>
-                {styles.map(s => <option key={s}>{s}</option>)}
+                {outfitStyles.map(s => <option key={s}>{s}</option>)}
               </select>
             </div>
 
