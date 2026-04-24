@@ -136,6 +136,7 @@ input:focus, select:focus {
 .grid2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  align-items: center;
   gap: 10px;
 }
 
@@ -382,8 +383,8 @@ button {
   padding: 0 16px;
   border-radius: 15px;
   border: none;
-  background: #5de6a1;
-  color: rgb(0, 0, 0);
+  background: #6cebe3;
+  color: rgb(255, 255, 255);
   font-size: 20px;
   font-weight: 800;
   cursor: pointer;
@@ -391,9 +392,9 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  line-height: 1;
+  
 
-  margin-bottom: 14px;
+  transform: translateY(-7.5px);
 }
 
 .colorsPreview,
@@ -417,4 +418,16 @@ button {
 .savedColorDot {
   width: 16px;
   height: 16px;
+}
+
+.edit {
+  width: 100%;
+  border: none;
+  border-radius: 18px;
+  padding: 16px;
+  font-weight: 800;
+  background: #dbeafe;
+  color: #1d4ed8;
+  cursor: pointer;
+  margin-bottom: -20px;
 }

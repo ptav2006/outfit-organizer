@@ -33,6 +33,7 @@ export default function App() {
 
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("Todos");
+  const [editingId, setEditingId] = useState(null);
 
   const [form, setForm] = useState({
     title: "",
@@ -61,6 +62,12 @@ export default function App() {
     updated[index][field] = value;
     setForm({ ...form, pieces: updated });
   }
+
+  function editOutfit(outfit) {
+  setForm(outfit);
+  setEditingId(outfit.id);
+  }
+
   function addColorToPiece(index) {
     const updated = [...form.pieces];
     const color = updated[index].tempColor || "#ffffff";
@@ -89,6 +96,22 @@ export default function App() {
   function addOutfit(e) {
     e.preventDefault();
     if (!form.title.trim()) return;
+    if (editingId) {
+      setOutfits(outfits.map(outfits => outfits.id === editingId ? { ...form, id: editingId, pieces: form.pieces.filter(p => p.name.trim()) } : outfits
+    ));
+      setEditingId(null);
+
+      setForm({
+        title: "",
+        function: "Universidade",
+        customFunction: "",
+        style: "Casual",
+        image: "",
+        pieces: [{ name: "", category: "T-shirt", colors: [], tempColor: "#ffffff" }]
+      });
+
+      return;
+    }
 
     setOutfits([
       {
@@ -263,7 +286,9 @@ export default function App() {
                 + Adicionar peça
               </button>
 
-              <button className="primary">Guardar outfit</button>
+              <button className="primary">
+                {editingId ? "Atualizar outfit" : "Guardar outfit"}
+              </button>
             </form>
           </section>
 
@@ -326,6 +351,12 @@ export default function App() {
                         </div>
                       ))}
                     </div>
+                    <button
+                      className="edit"
+                      onClick={() => editOutfit(outfit)}
+                    >
+                      Editar outfit
+                    </button>
 
                     <button
                       className="delete"
