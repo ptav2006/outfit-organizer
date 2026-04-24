@@ -2,8 +2,8 @@ import "./App.css";
 import { useEffect, useMemo, useState } from "react";
 
 const categories = [
-  "T-shirt", "Camisa", "Polo", "Sweatshirt", "Casaco", "Blazer",
-  "Calças", "Jeans", "Calções", "Fato", "Sapatilhas", "Sapatos",
+  "T-shirt", "Camisa", "Polo", "Sweatshirt", "Casaco",
+  "Calças", "Calções", "Fato", "Calçado",
   "Relógio", "Cinto", "Mochila", "Acessório"
 ];
 
@@ -117,7 +117,7 @@ export default function App() {
         <header className="hero">
           <div>
             <p className="tag">STYLE PLANNER</p>
-            <h1>Organizador de Outfits</h1>
+            <h1>Outfit Organizer</h1>
             <p className="subtitle">
               Guarda combinações, planeia looks e organiza as tuas peças por ocasião, estilo e data.
             </p>
@@ -131,7 +131,7 @@ export default function App() {
 
         <main className="layout">
           <section className="panel">
-            <h2 className="form-title">Novo outfit</h2>
+            <h2 className="form-title">New outfit</h2>
 
             <form onSubmit={addOutfit}>
               <input
