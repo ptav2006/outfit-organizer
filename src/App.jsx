@@ -214,7 +214,7 @@ export default function App() {
             <div className="cards">
               {filteredOutfits.length === 0 && (
                 <div className="empty">
-                  <h2>Ainda não tens outfits guardados.</h2>
+                  <h2 className="ainda-title">Ainda não tens outfits guardados.</h2>
                   <p>Cria o primeiro conjunto no formulário ao lado.</p>
                 </div>
               )}
