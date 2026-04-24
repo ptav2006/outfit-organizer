@@ -40,7 +40,7 @@ export default function App() {
     function: "Universidade",
     customFunction: "",
     image: "",
-    pieces: [{ name: "", category: "T-shirt", color: "" }]
+    pieces: [{ name: "", category: "T-shirt", colors: [], tempColor: "#ffffff" }]
   });
 
   useEffect(() => {
@@ -50,7 +50,9 @@ export default function App() {
   function addPiece() {
     setForm({
       ...form,
-      pieces: [...form.pieces, { name: "", category: "T-shirt", color: "" }]
+      pieces: [
+        ...form.pieces,
+        { name: "", category: "T-shirt", colors: [], tempColor: "#ffffff" }]
     });
   }
 
@@ -59,6 +61,23 @@ export default function App() {
     updated[index][field] = value;
     setForm({ ...form, pieces: updated });
   }
+  function addColorToPiece(index) {
+    const updated = [...form.pieces];
+    const color = updated[index].tempColor || "#ffffff";
+
+    updated[index].colors = [...(updated[index].colors || []), color];
+    updated[index].tempColor = "#ffffff";
+    
+    setForm({ ...form, pieces: updated });
+  } 
+
+  function removeColorFromPiece(pieceIndex, colorIndex) {
+    const updated = [...form.pieces];
+
+    updated[pieceIndex].colors = updated[pieceIndex].colors.filter((_, i) => i !== colorIndex);
+    setForm({ ...form, pieces: updated });
+  }
+
 
   function removePiece(index) {
     setForm({
@@ -86,7 +105,7 @@ export default function App() {
       customFunction: "",
       style: "Casual",
       image: "",
-      pieces: [{ name: "", category: "T-shirt", color: "" }]
+      pieces: [{ name: "", category: "T-shirt", colors: [], tempColor: "#ffffff" }]
     });
   }
 
@@ -111,8 +130,6 @@ export default function App() {
   }, [outfits, search, filter]);
 
   return (
-    <>
-
       <div className="app">
         <header className="hero">
           <div>
@@ -189,12 +206,46 @@ export default function App() {
                       {categories.map(c => <option key={c}>{c}</option>)}
                     </select>
 
-                    <input
-                      placeholder="Cor"
-                      value={piece.color}
-                      onChange={e => updatePiece(index, "color", e.target.value)}
-                    />
-                  </div>
+                    <div className="colorArea">
+                      <div className="colorPickerRow">
+                        <input
+                          type="color"
+                          value={piece.tempColor || "#ffffff"}
+                          onChange={e => updatePiece(index, "tempColor", e.target.value)}
+                          className="colorPicker"
+                          />
+
+                        <button
+                          type="button"
+                          className="addColorBtn"
+                          onClick={() => addColorToPiece(index)}
+                        >
+                          +
+                        </button>
+                      </div>
+
+                      {form.pieces.length > 1 && (
+                        <button
+                          type="button"
+                          className="deleteSmall"
+                          onClick={() => removePiece(index)}
+                        >
+                          Remover peça
+                        </button>
+                      )}
+                      </div>
+
+                      <div className="colorsPreview">
+                        {piece.colors?.map((color, colorIndex) => (
+                          <span
+                            key={colorIndex}
+                            className="colorDot"
+                            style={{ backgroundColor: color }}
+                            onClick={() => removeColorFromPiece(index, colorIndex)}
+                          />
+                        ))}
+                      </div>
+                    </div>
 
                   {form.pieces.length > 1 && (
                     <button
@@ -260,7 +311,18 @@ export default function App() {
                       {outfit.pieces.map((p, i) => (
                         <div className="pieceTag" key={i}>
                           <strong>{p.name}</strong>
-                          <small>{p.category} {p.color && `· ${p.color}`}</small>
+                          <small>
+                            {p.category}
+                            <span className="savedColors">
+                              {p.colors?.map((color, i) => (
+                                <span
+                                  key={i}
+                                  className="savedColorDot"
+                                  style={{ backgroundColor: color }}
+                                />
+                              ))}
+                            </span>
+                          </small>
                         </div>
                       ))}
                     </div>
@@ -277,8 +339,7 @@ export default function App() {
             </div>
           </section>
         </main>
-      </div>
-    </>
+      </div>  
   );
 }
 

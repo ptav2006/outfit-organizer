@@ -136,7 +136,7 @@ input:focus, select:focus {
 .grid2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 10px;
 }
 
 .upload {
@@ -356,4 +356,65 @@ button {
   .toolbar {
     grid-template-columns: 1fr;
   }
+}
+
+.colorArea {
+  width: 100%;
+}
+
+.colorPickerRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.colorPicker {
+  width: 50px;
+  height: 50px;
+  padding: 4px;
+  border-radius: 16px;
+  cursor: pointer;
+}
+
+.addColorBtn {
+  height: 50px;
+  min-width: 50px;
+  padding: 0 16px;
+  border-radius: 15px;
+  border: none;
+  background: #5de6a1;
+  color: rgb(0, 0, 0);
+  font-size: 20px;
+  font-weight: 800;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+
+  margin-bottom: 14px;
+}
+
+.colorsPreview,
+.savedColors {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.colorDot,
+.savedColorDot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 0 0 1px #cbd5e1;
+  cursor: pointer;
+}
+
+.savedColorDot {
+  width: 16px;
+  height: 16px;
 }
