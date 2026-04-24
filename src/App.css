@@ -196,5 +196,8 @@
   font-size: 24px;
   font-weight: 700;
   text-align: center;
-  margin-top: -10px;
+}
+
+.empty {
+  padding: 10px 20px 30px 40px;
 }
