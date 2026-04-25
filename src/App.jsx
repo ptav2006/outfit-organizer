@@ -159,7 +159,7 @@ export default function App() {
             <p className="tag">STYLE PLANNER</p>
             <h1>Outfit Organizer</h1>
             <p className="subtitle">
-              Guarda combinações, planeia looks e organiza as tuas peças por ocasião, estilo e data.
+              Guarda combinações, planeia looks e organiza as tuas peças de roupa de forma simples.
             </p>
           </div>
 
@@ -246,17 +246,7 @@ export default function App() {
                           +
                         </button>
                       </div>
-
-                      {form.pieces.length > 1 && (
-                        <button
-                          type="button"
-                          className="deleteSmall"
-                          onClick={() => removePiece(index)}
-                        >
-                          Remover peça
-                        </button>
-                      )}
-                      </div>
+                    </div>
 
                       <div className="colorsPreview">
                         {piece.colors?.map((color, colorIndex) => (
@@ -326,7 +316,7 @@ export default function App() {
                     <div className="cardTop">
                       <div>
                         <h2>{outfit.title}</h2>
-                        <p>{outfit.occasion || "Sem ocasião"} · {outfit.date || "Sem data"}</p>
+                        <p>{outfit.function === "Outro" ? outfit.customFunction : outfit.function}</p>
                       </div>
 
                       <span>{outfit.style}</span>
@@ -351,19 +341,10 @@ export default function App() {
                         </div>
                       ))}
                     </div>
-                    <button
-                      className="edit"
-                      onClick={() => editOutfit(outfit)}
-                    >
-                      Editar outfit
-                    </button>
-
-                    <button
-                      className="delete"
-                      onClick={() => setOutfits(outfits.filter(o => o.id !== outfit.id))}
-                    >
-                      Apagar outfit
-                    </button>
+                    <div className="actions">
+                      <button className="edit">✏️ Editar</button>
+                      <button className="delete">🗑️ Apagar</button>
+                    </div>
                   </div>
                 </article>
               ))}

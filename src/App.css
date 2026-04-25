@@ -227,70 +227,102 @@ button {
 }
 
 .card {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 34px;
   overflow: hidden;
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0,15),
+    0 30px 80px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0,45);
+  transition: 0.25s ease, box-shadow 0.25s ease; 
 }
 
-.card > img,
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.2),
+    0 40px 100px rgba(0, 0, 0, 0.3);
+}
+
+.card img,
 .placeholder {
   width: 100%;
-  height: 280px;
+  height: 300px;
   object-fit: cover;
-  background: linear-gradient(135deg, #1e293b, #2563eb);
+}
+
+.placeholder {
+  background: linear-gradient(145deg, #172554, #2563eb);
   color: white;
-  display: grid;
+  display: flex;
   place-items: center;
   font-size: 42px;
   font-weight: 900;
-  letter-spacing: 5px;
+  letter-spacing: 10px;
+  align-items: center;
+  justify-content: center;
 }
 
 .cardBody {
-  padding: 24px;
+  padding: 28px;
 }
 
 .cardTop {
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
+  gap: 18px;
+  margin-bottom: 22px;
 }
 
 .cardTop h2 {
   margin: 0;
   font-size: 28px;
+  color: #0f172a;
 }
 
 .cardTop p {
   margin: 8px 0 0;
   color: #64748b;
+  font-size: 16px;
 }
 
 .cardTop span {
-  height: fit-content;
-  padding: 9px 14px;
+  padding: 10px 18px;
   border-radius: 999px;
   background: #0f172a;
   color: white;
-  font-size: 13px;
-  font-weight: 900;
+  font-size: 14px;
+  font-weight: 800;
 }
 
 .piecesList {
-  margin-top: 20px;
-  display: grid;
+  margin-top: 22px;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
 }
 
 .pieceTag {
-  padding: 14px;
-  border-radius: 16px;
-  background: #f1f5f9;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .pieceTag strong {
-  display: block;
+  color: #0f172a;
+  font-size: 16px;
 }
 
 .pieceTag small {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
   color: #64748b;
 }
 
@@ -378,8 +410,8 @@ button {
 }
 
 .addColorBtn {
-  height: 50px;
-  min-width: 50px;
+  height: 45px;
+  min-width: 40px;
   padding: 0 16px;
   border-radius: 15px;
   border: none;
@@ -400,19 +432,17 @@ button {
 .colorsPreview,
 .savedColors {
   display: flex;
-  gap: 8px;
-  margin-top: 10px;
-  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 0;
 }
 
 .colorDot,
 .savedColorDot {
-  width: 24px;
-  height: 24px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   border: 2px solid white;
   box-shadow: 0 0 0 1px #cbd5e1;
-  cursor: pointer;
 }
 
 .savedColorDot {
@@ -420,14 +450,47 @@ button {
   height: 16px;
 }
 
-.edit {
+.edit, 
+.delete {
   width: 100%;
   border: none;
   border-radius: 18px;
   padding: 16px;
-  font-weight: 800;
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.2s ease, opacity 0.2s ease;
+}
+
+.edit:hover 
+.delete:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+.edit {
   background: #dbeafe;
   color: #1d4ed8;
-  cursor: pointer;
-  margin-bottom: -20px;
+  font-weight: 800;
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.delete {
+  background: #fee2e2;
+  color: #b91c1c;
+  font-weight: 800;
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.actions button {
+  flex: 1;
+  padding: 16px;
+  border-radius: 18px;
 }
