@@ -70,6 +70,21 @@ export default function App() {
     });
   }
 
+  function deleteClosetItem(id) {
+    setClosetItems(closetItems.filter(item => item.id !== id));
+  }
+
+  function editClosetItem(item) {
+    const newName = prompt("Novo nome da peça:", item.nome);
+    if (!newName || !newName.trim()) return;
+
+    setClosetItems(closetItems.map(closetItem =>
+      closetItem.id === item.id
+        ? { ...closetItem, nome: newName.trim() }
+        : closetItem
+    ));
+  }
+
   function addItemToCloset(newItem) {
     setClosetItems((prev) => {
       const alreadyExists = prev.find(
@@ -423,9 +438,15 @@ export default function App() {
                           />
                         ))}
                       </div>
-                      <div>
+
+                      <div className="closetInfo">
                         <strong>{item.nome}</strong>
                         <p>{item.categoria} · usada {item.vezesUsada}x</p>
+                      </div>
+
+                      <div className="closetActions">
+                        <button type="button" onClick={() => editClosetItem(item)}>✏️</button>
+                        <button type="button" onClick={() => deleteClosetItem(item.id)}>🗑️</button>
                       </div>
                     </div>
                   ))}
