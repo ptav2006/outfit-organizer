@@ -336,13 +336,21 @@ button {
 
 .empty {
   grid-column: 1 / -1;
-  padding: 34px 24px 38px 24px;
+  padding: 48px 28px;
   text-align: center;
+  border-radius: 34px;
+  background: rgba/(255,255,255,0.94);
+  color: #0f172a;
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.18),
+    0 0 35px rgba(108, 235, 227, 0.16);
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 170px;
+  min-height: 230px;
+  animation: cardin 0.35s ease both;
 }
 
 .ainda-title {
@@ -607,4 +615,41 @@ select:focus {
 
 html {
   scroll-behavior: smooth;
+}
+
+.emptyIcon {
+  width: 72px;
+  height: 72px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #dbeafe, #ccfbf1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  margin-bottom: 18px;
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.18);
+}
+
+.empty:hover .emptyIcon {
+  transform: translateY(-3px) rotate(-4deg);
+}
+
+.emptyIcon {
+  transition: transform 0.2s ease;
+}
+
+.card.deleting {
+  animation: deleteCard 0.25s ease forwards;
+}
+
+@keyframes deleteCard {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(0.96) translateY(14px);
+  }
 }

@@ -36,6 +36,7 @@ export default function App() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("Todos");
   const [editingId, setEditingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
   const [form, setForm] = useState({
     title: "",
@@ -58,6 +59,15 @@ export default function App() {
         { name: "", category: "T-shirt", colors: [], tempColor: "#ffffff" }]
     });
   }
+
+  function deleteOutfit(id) {
+  setDeletingId(id);
+
+  setTimeout(() => {
+    setOutfits(outfits.filter(outfit => outfit.id !== id));
+    setDeletingId(null);
+  }, 250);
+}
 
   function updatePiece(index, field, value) {
     const updated = [...form.pieces];
@@ -305,13 +315,14 @@ export default function App() {
             <div className="cards">
               {filteredOutfits.length === 0 && (
                 <div className="empty">
+                  <div className="emptyIcon">👕</div>
                   <h2 className="ainda-title">Ainda não tens outfits guardados</h2>
                   <p>Cria o teu primeiro conjunto</p>
                 </div>
               )}
 
               {filteredOutfits.map(outfit => (
-                <article className="card" key={outfit.id}>
+                <article className={`card ${deletingId === outfit.id ? "deleting" : ""}`} key={outfit.id}>
                   {outfit.image ? (
                     <img src={outfit.image} alt={outfit.title} />
                   ) : (
@@ -357,7 +368,7 @@ export default function App() {
 
                       <button 
                         className="delete"
-                        onClick={() => setOutfits(outfits.filter(o => o.id !== outfit.id))}
+                        onClick={() => deleteOutfit(outfit.id)}
                       >
                         🗑️ Apagar
                       </button>
