@@ -490,7 +490,16 @@ button {
 }
 
 .actions button {
+  margin: 0 !important;
+
   flex: 1;
-  padding: 16px;
+  height: 50px;
+
+  display: flex;
   border-radius: 18px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 800;
+  cursor: pointer;
 }

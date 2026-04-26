@@ -342,8 +342,19 @@ export default function App() {
                       ))}
                     </div>
                     <div className="actions">
-                      <button className="edit">✏️ Editar</button>
-                      <button className="delete">🗑️ Apagar</button>
+                      <button 
+                        className="edit"
+                        onClick={() => editOutfit(outfit)}
+                      >
+                        ✏️ Editar
+                      </button>
+                      
+                      <button 
+                        className="delete"
+                        onClick={() => setOutfits(outfits.filter(o => o.id !== outfit.id))}
+                      >
+                        🗑️ Apagar
+                      </button>
                     </div>
                   </div>
                 </article>
