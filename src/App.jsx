@@ -26,11 +26,13 @@ const outfitFunctions = [
   "Outro"
 ];
 
+
 export default function App() {
   const [outfits, setOutfits] = useState(() => {
     return JSON.parse(localStorage.getItem("outfits-masculinos")) || [];
   });
-
+  
+  const [saved, setSaved] = useState(false);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("Todos");
   const [editingId, setEditingId] = useState(null);
@@ -112,6 +114,10 @@ export default function App() {
 
       return;
     }
+
+    setSaved(true);
+
+    setTimeout(() => setSaved(false), 1400);
 
     setOutfits([
       {
@@ -276,8 +282,8 @@ export default function App() {
                 + Adicionar peça
               </button>
 
-              <button className="primary">
-                {editingId ? "Atualizar outfit" : "Guardar outfit"}
+              <button className={`primary ${saved ? "savedBtn" : ""}`}>
+                {saved ? "Guardado ✅" : editingId ? "Atualizar outfit" : "Guardar outfit"}
               </button>
             </form>
           </section>
@@ -348,7 +354,7 @@ export default function App() {
                       >
                         ✏️ Editar
                       </button>
-                      
+
                       <button 
                         className="delete"
                         onClick={() => setOutfits(outfits.filter(o => o.id !== outfit.id))}

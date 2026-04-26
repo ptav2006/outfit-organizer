@@ -239,9 +239,9 @@ button {
 
 .card:hover {
   transform: translateY(-6px);
-  box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.2),
-    0 40px 100px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.28),
+    0 0 35px rgba(108, 235, 227, 0.25);
 }
 
 .card img,
@@ -502,4 +502,109 @@ button {
   gap: 8px;
   font-weight: 800;
   cursor: pointer;
+}
+
+button,
+.upload,
+.card,
+.pieceTag,
+.colorDot,
+.savedColorDot {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    opacity 0.2s ease;
+}
+
+button:hover,
+.upload:hover {
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: scale(0.96);
+}
+
+.primary:hover {
+  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.35);
+}
+
+.secondary:hover,
+.edit:hover {
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.22);
+}
+
+.delete:hover {
+  box-shadow: 0 12px 28px rgba(185, 28, 28, 0.18);
+}
+
+.upload:hover {
+  background: #dbeafe;
+  border-color: #2563eb;
+}
+
+.pieceTag:hover {
+  transform: translateY(-2px);
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.colorDot:hover,
+.savedColorDot:hover {
+  transform: scale(1.18);
+}
+
+input,
+select {
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+input:focus,
+select:focus {
+  transform: translateY(-1px);
+}
+
+.card {
+  animation: cardIn 0.35s ease both;
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.piece {
+  animation: pieceIn 0.25s ease;
+}
+
+@keyframes pieceIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.savedBtn {
+  background: #16a34a !important;
+  box-shadow: 0 14px 35px rgba(22, 163, 74, 0.35);
+}
+
+html {
+  scroll-behavior: smooth;
 }
