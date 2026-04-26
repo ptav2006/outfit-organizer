@@ -203,7 +203,7 @@ export default function App() {
         <header className="hero">
           <div>
             <p className="tag">STYLE PLANNER</p>
-            <h1>Outfit Organizer</h1>
+            <h1>Outfit <span>Organizer</span></h1>
             <p className="subtitle">
               Guarda combinações, planeia looks e organiza as tuas peças de roupa de forma simples.
             </p>

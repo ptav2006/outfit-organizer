@@ -6,9 +6,9 @@ body {
   margin: 0;
   font-family: Inter, Arial, sans-serif;
   background:
-    radial-gradient(circle at top left, #3b82f6 0, transparent 30%),
-    radial-gradient(circle at top right, #111827 0, transparent 35%),
-    #0f172a;
+    radial-gradient(circle at top left, rgba(255,255,255,0.12), transparent 28%),
+    radial-gradient(circle at top right, rgba(148,163,184,0.18), transparent 30%),
+    #050505;
   color: #f8fafc;
 }
 
@@ -29,6 +29,22 @@ body {
   justify-content: space-between;
   gap: 24px;
   box-shadow: 0 30px 80px rgba(255, 164, 247, 0.35);
+}
+
+.hero h1 {
+  font-size: clamp(42px, 6vw, 82px);
+  line-height: 0.95;
+  letter-spacing: -3px;
+  font-weight: 900;
+}
+
+.hero h1 span {
+  display: inline-block;
+  background: linear-gradient(135deg, #60a5fa, #a78bfa);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 
 .tag {
@@ -90,13 +106,17 @@ h1 {
   gap: 28px;
 }
 
-.panel, .toolbar, .card, .empty {
-  background: rgba(255,255,255,0.92);
-  color: #0f172a;
-  border-radius: 30px;
-  box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+.panel,
+.toolbar,
+.card,
+.empty {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 28px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(18px);
 }
-
 .panel {
   padding: 26px;
   height: fit-content;
@@ -521,6 +541,17 @@ button,
     background 0.2s ease,
     opacity 0.2s ease;
 }
+.primary-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 14px 22px;
+  font-weight: 800;
+  cursor: pointer;
+  background: #ffffff;
+  color: #050505;
+  box-shadow: 0 12px 30px rgba(255, 255, 255, 0.12);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
 
 button:hover,
 .upload:hover {
@@ -529,6 +560,11 @@ button:hover,
 
 button:active {
   transform: scale(0.96);
+}
+
+.primary-btn:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
 }
 
 .primary:hover {
@@ -816,5 +852,28 @@ body {
   border-radius: 0 0 34px 34px;
   overflow: hidden;
 }
+
+.card:first-child {
+  animation: newOutfitBounce 0.45s ease both;
+}
+
+@keyframes newOutfitBounce {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) scale(0.94);
+  }
+
+  60% {
+    opacity: 1;
+    transform: translateY(-8px) scale(1.01);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
 
 
