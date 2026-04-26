@@ -39,6 +39,11 @@ export default function App() {
   const [deletingId, setDeletingId] = useState(null);
   const [draggedId, setDraggedId] = useState(null);
 
+  const [closetItems, setClosetItems] = useState(() => {
+    const saved = localStorage.getItem("closetItems");
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const [form, setForm] = useState({
     title: "",
     style: "Casual",
@@ -52,6 +57,10 @@ export default function App() {
     localStorage.setItem("outfits-masculinos", JSON.stringify(outfits));
   }, [outfits]);
 
+  useEffect(() => {
+    localStorage.setItem("closetItems", JSON.stringify(closetItems));
+  }, [closetItems]);
+
   function addPiece() {
     setForm({
       ...form,
@@ -60,6 +69,37 @@ export default function App() {
         { name: "", category: "T-shirt", colors: [], tempColor: "#ffffff" }]
     });
   }
+
+  function addItemToCloset(newItem) {
+    setClosetItems((prev) => {
+      const alreadyExists = prev.find(
+        (item) =>
+          item.nome.toLowerCase() === newItem.nome.toLowerCase() &&
+          item.cor.toLowerCase() === newItem.cor.toLowerCase()
+      );
+
+    if (alreadyExists) {
+      return prev.map((item) =>
+        item.id === alreadyExists.id
+          ? { ...item, vezesUsada: item.vezesUsada + 1 }
+          : item
+      );
+    }
+
+    return [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        nome: newItem.nome,
+        cor: newItem.cor,
+        corHex: newItem.corHex,
+        cores: newItem.cores,
+        categoria: newItem.categoria,
+        vezesUsada: 1,
+      },
+    ];
+  });
+}
 
   function deleteOutfit(id) {
   setDeletingId(id);
@@ -151,11 +191,25 @@ export default function App() {
 
     setTimeout(() => setSaved(false), 1400);
 
+    const validPieces = form.pieces.filter(p => p.name.trim());
+
+    validPieces.forEach((piece) => {
+      const mainColor = piece.colors?.[0] || piece.tempColor || "#ffffff";
+
+      addItemToCloset({
+        nome: piece.name.trim(),
+        cor: mainColor,
+        corHex: mainColor,
+        cores: piece.colors?.length ? piece.colors : [mainColor],
+        categoria: piece.category,
+      });
+    });
+
     setOutfits([
       {
         id: Date.now(),
         ...form,
-        pieces: form.pieces.filter(p => p.name.trim())
+        pieces: validPieces
       },
       ...outfits
     ]);
@@ -342,6 +396,41 @@ export default function App() {
                 <option>Favoritos</option>
                 {outfitStyles.map(s => <option key={s}>{s}</option>)}
               </select>
+            </div>
+
+            <div className="closetBox">
+              <div className="closetHeader">
+                <div>
+                  <p className="tag">CLOSET</p>
+                  <h2>Armário pessoal</h2>
+                </div>
+
+                <span>{closetItems.length} peças</span>
+              </div>
+
+              {closetItems.length === 0 ? (
+                <p className="closetEmpty">As peças aparecem aqui quando guardares outfits.</p>
+              ) : (
+                <div className="closetGrid">
+                  {closetItems.map((item) => (
+                    <div className="closetItem" key={item.id}>
+                      <div className="closetColors">
+                        {(item.cores || [item.corHex]).map((color, i) => (
+                          <span
+                            key={i}
+                            className="closetColor"
+                            style={{ backgroundColor: color }}
+                          />
+                        ))}
+                      </div>
+                      <div>
+                        <strong>{item.nome}</strong>
+                        <p>{item.categoria} · usada {item.vezesUsada}x</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="cards">
