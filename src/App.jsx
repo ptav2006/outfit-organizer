@@ -208,10 +208,11 @@ export default function App() {
               Guarda combinações, planeia looks e organiza as tuas peças de roupa de forma simples.
             </p>
           </div>
-
-          <div className="stats">
-            <span>{outfits.length}</span>
-            <p>outfits guardados</p>
+          <div className="hero-right">
+            <div className="stats">
+              <span>{outfits.length}</span>
+              <p>outfits guardados</p>
+            </div>
           </div>
         </header>
 
