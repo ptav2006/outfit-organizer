@@ -80,6 +80,14 @@ export default function App() {
   setEditingId(outfit.id);
   }
 
+  function toggleFavorite(id) {
+  setOutfits(outfits.map(outfit =>
+    outfit.id === id
+      ? { ...outfit, favorite: !outfit.favorite }
+      : outfit
+  ));
+}
+
   function addColorToPiece(index) {
     const updated = [...form.pieces];
     const color = updated[index].tempColor || "#ffffff";
@@ -323,6 +331,12 @@ export default function App() {
 
               {filteredOutfits.map(outfit => (
                 <article className={`card ${deletingId === outfit.id ? "deleting" : ""}`} key={outfit.id}>
+                  <button
+                    className={`favoriteBtn ${outfit.favorite ? "active" : ""}`}
+                    onClick={() => toggleFavorite(outfit.id)}
+                  >
+                    {outfit.favorite ? "❤️" : "🤍"}
+                  </button>
                   {outfit.image ? (
                     <img src={outfit.image} alt={outfit.title} />
                   ) : (
