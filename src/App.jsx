@@ -37,6 +37,7 @@ export default function App() {
   const [filter, setFilter] = useState("Todos");
   const [editingId, setEditingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [draggedId, setDraggedId] = useState(null);
 
   const [form, setForm] = useState({
     title: "",
@@ -96,7 +97,20 @@ export default function App() {
     updated[index].tempColor = "#ffffff";
     
     setForm({ ...form, pieces: updated });
-  } 
+  }
+
+  function moveOutfit(targetId) {
+  if (!draggedId || draggedId === targetId) return;
+
+  const draggedIndex = outfits.findIndex(o => o.id === draggedId);
+  const targetIndex = outfits.findIndex(o => o.id === targetId);
+
+  const updated = [...outfits];
+  const [draggedItem] = updated.splice(draggedIndex, 1);
+  updated.splice(targetIndex, 0, draggedItem);
+
+  setOutfits(updated);
+}
 
   function removeColorFromPiece(pieceIndex, colorIndex) {
     const updated = [...form.pieces];
@@ -168,12 +182,20 @@ export default function App() {
   }
 
   const filteredOutfits = useMemo(() => {
-    return outfits.filter(outfit => {
+    let result = outfits.filter(outfit => {
       const text = JSON.stringify(outfit).toLowerCase();
       const matchesSearch = text.includes(search.toLowerCase());
+
+      if (filter === "Favoritos") {
+        return matchesSearch && outfit.favorite;
+      }
+
       const matchesFilter = filter === "Todos" || outfit.style === filter;
+
       return matchesSearch && matchesFilter;
     });
+
+    return result;
   }, [outfits, search, filter]);
 
   return (
@@ -316,6 +338,7 @@ export default function App() {
 
               <select value={filter} onChange={e => setFilter(e.target.value)}>
                 <option>Todos</option>
+                <option>Favoritos</option>
                 {outfitStyles.map(s => <option key={s}>{s}</option>)}
               </select>
             </div>
@@ -330,7 +353,15 @@ export default function App() {
               )}
 
               {filteredOutfits.map(outfit => (
-                <article className={`card ${deletingId === outfit.id ? "deleting" : ""}`} key={outfit.id}>
+                <article 
+                  className={`card ${deletingId === outfit.id ? "deleting" : ""} ${draggedId === outfit.id ? "dragged" : ""}`}
+                  key={outfit.id}
+                  draggable
+                  onDragStart={() => setDraggedId(outfit.id)}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={() => moveOutfit(outfit.id)}
+                  onDragEnd={() => setDraggedId(null)}  
+                >
                   <button
                     className={`favoriteBtn ${outfit.favorite ? "active" : ""}`}
                     onClick={() => toggleFavorite(outfit.id)}
