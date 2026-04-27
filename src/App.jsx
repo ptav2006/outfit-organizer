@@ -38,6 +38,7 @@ export default function App() {
   const [editingId, setEditingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [draggedId, setDraggedId] = useState(null);
+  const [closedSuggestions, setClosedSuggestions] = useState([]);
 
   const [closetItems, setClosetItems] = useState(() => {
     const saved = localStorage.getItem("closetItems");
@@ -72,6 +73,21 @@ export default function App() {
 
   function deleteClosetItem(id) {
     setClosetItems(closetItems.filter(item => item.id !== id));
+  }
+
+  function applyClosetSuggestion(pieceIndex, item) {
+    const updated = [...form.pieces];
+
+    updated[pieceIndex] = {
+      ...updated[pieceIndex],
+      name: item.nome,
+      category: item.categoria,
+      colors: item.cores || [item.corHex],
+      tempColor: item.corHex || "#ffffff",
+    };
+
+    setForm({ ...form, pieces: updated });
+    setClosedSuggestions([...closedSuggestions, pieceIndex]);
   }
 
   function editClosetItem(item) {
@@ -331,11 +347,46 @@ export default function App() {
 
               {form.pieces.map((piece, index) => (
                 <div className="piece" key={index}>
-                  <input
-                    placeholder="Nome da peça"
-                    value={piece.name}
-                    onChange={e => updatePiece(index, "name", e.target.value)}
-                  />
+                  <div className="pieceNameArea">
+                    <input
+                      placeholder="Nome da peça"
+                      value={piece.name}
+                      onChange={e => {
+                        updatePiece(index, "name", e.target.value);
+                        setClosedSuggestions(closedSuggestions.filter(i => i !== index));
+                      }}
+                    />
+
+                    {piece.name.trim() && !closedSuggestions.includes(index) && (
+                      <div className="suggestionsBox">
+                        {closetItems
+                          .filter(item =>
+                            item.nome.toLowerCase().includes(piece.name.toLowerCase())
+                          )
+                          .slice(0, 5)
+                          .map(item => (
+                            <button
+                              type="button"
+                              className="suggestionItem"
+                              key={item.id}
+                              onClick={() => applyClosetSuggestion(index, item)}
+                            >
+                              <div className="suggestionColors">
+                                {(item.cores || [item.corHex]).map((color, i) => (
+                                  <span
+                                    key={i}
+                                    className="suggestionColor"
+                                    style={{ backgroundColor: color }}
+                                  />
+                                ))}
+                              </div>
+
+                              <span>{item.nome}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
 
                   <div className="grid2">
                     <select

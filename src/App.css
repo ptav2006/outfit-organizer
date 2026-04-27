@@ -1038,6 +1038,61 @@ body {
   color: #475569;
 }
 
+.pieceNameArea {
+  position: relative;
+}
+
+.suggestionsBox {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+
+  padding: 8px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+}
+
+.suggestionItem {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 12px;
+  border: none;
+  border-radius: 12px;
+
+  background: transparent;
+  color: #0f172a;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.suggestionItem:hover {
+  background: rgba(15, 23, 42, 0.06);
+}
+
+.suggestionColors {
+  display: flex;
+}
+
+.suggestionColor {
+  width: 15px;
+  height: 15px;
+  border-radius: 999px;
+  border: 2px solid #ffffff;
+  margin-left: -5px;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.18);
+}
+
+.suggestionColor:first-child {
+  margin-left: 0;
+}
+
 
 
 
