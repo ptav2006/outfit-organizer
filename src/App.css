@@ -912,15 +912,21 @@ body {
 
 .closetHeader h2 {
   margin: 4px 0 0;
-  font-size: 1.4rem;
+  font-size: 1.6rem;
+  font-weight: 640;
+  letter-spacing: -0.5px;
+  color: #0f172a;
+  font-style: italic;
 }
 
 .closetHeader span {
   padding: 8px 14px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(15, 23, 42, 0.12);
   font-size: 0.85rem;
-  color: #e5e7eb;
+  color: #0f172a;
+  backdrop-filter: blur(8px);
 }
 
 .closetEmpty {
