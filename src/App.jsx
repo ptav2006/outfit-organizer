@@ -255,6 +255,33 @@ export default function App() {
     });
   }
 
+  function addClosetItemToForm(item) {
+    const newPiece = {
+      name: item.nome,
+      category: item.categoria,
+      colors: item.cores || [item.corHex],
+      tempColor: item.corHex || "#ffffff",
+    };
+
+    const hasEmptyPiece = form.pieces.findIndex(p => !p.name.trim());
+
+    if (hasEmptyPiece !== -1) {
+      const updated = [...form.pieces];
+      updated[hasEmptyPiece] = newPiece;
+
+      setForm({ ...form, pieces: updated });
+      setClosedSuggestions(prev => [...prev, hasEmptyPiece]);
+      return;
+    }
+
+    setForm({
+      ...form,
+      pieces: [...form.pieces, newPiece],
+    });
+
+    setClosedSuggestions(prev => [...prev, form.pieces.length]);
+  }
+
   function handleImage(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -479,7 +506,11 @@ export default function App() {
               ) : (
                 <div className="closetGrid">
                   {closetItems.map((item) => (
-                    <div className="closetItem" key={item.id}>
+                    <div 
+                      className="closetItem" 
+                      key={item.id}
+                      onClick={() => addClosetItemToForm(item)}
+                    >
                       <div className="closetColors">
                         {(item.cores || [item.corHex]).map((color, i) => (
                           <span
@@ -496,8 +527,24 @@ export default function App() {
                       </div>
 
                       <div className="closetActions">
-                        <button type="button" onClick={() => editClosetItem(item)}>✏️</button>
-                        <button type="button" onClick={() => deleteClosetItem(item.id)}>🗑️</button>
+                        <button 
+                          type="button" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            editClosetItem(item)
+                          }}
+                        >
+                          ✏️
+                        </button>
+                        <button 
+                          type="button" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteClosetItem(item.id)
+                          }}
+                        >
+                          🗑️
+                        </button>
                       </div>
                     </div>
                   ))}

@@ -954,6 +954,8 @@ body {
   backdrop-filter: blur(10px);
   transition: all 0.2s ease;
   overflow: hidden;
+
+  cursor: pointer;
 }
 
 .closetInfo {
