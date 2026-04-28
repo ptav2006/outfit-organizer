@@ -1115,6 +1115,10 @@ body {
   margin-left: 0;
 }
 
+.pieceSuggestions:empty {
+  display: none;
+}
+
 .closetFilters {
   display: flex;
   flex-wrap: wrap;

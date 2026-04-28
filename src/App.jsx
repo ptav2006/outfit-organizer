@@ -374,7 +374,11 @@ export default function App() {
                       }}
                     />
 
-                    {piece.name.trim() && !closedSuggestions.includes(index) && (
+                    {piece.name.trim() &&
+                      filteredCloset.filter(item =>
+                        item.name.toLowerCase().includes(piece.name.toLowerCase())
+                      ).length > 0 &&
+                      !closedSuggestions.includes(index) && (
                       <div className="suggestionsBox">
                         {filteredCloset
                           .filter(item =>
