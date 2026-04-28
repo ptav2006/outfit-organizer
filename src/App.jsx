@@ -557,85 +557,86 @@ export default function App() {
                 </div>
               )}
             </div>
+            <div className="cardsWrapper">
+              <div className="cards">
+                {filteredOutfits.length === 0 && (
+                  <div className="empty">
+                    <div className="emptyIcon">👕</div>
+                    <h2 className="ainda-title">Ainda não tens outfits guardados</h2>
+                    <p>Cria o teu primeiro conjunto</p>
+                  </div>
+                )}
 
-            <div className="cards">
-              {filteredOutfits.length === 0 && (
-                <div className="empty">
-                  <div className="emptyIcon">👕</div>
-                  <h2 className="ainda-title">Ainda não tens outfits guardados</h2>
-                  <p>Cria o teu primeiro conjunto</p>
-                </div>
-              )}
-
-              {filteredOutfits.map(outfit => (
-                <article 
-                  className={`card ${deletingId === outfit.id ? "deleting" : ""} ${draggedId === outfit.id ? "dragged" : ""}`}
-                  key={outfit.id}
-                  draggable
-                  onDragStart={() => setDraggedId(outfit.id)}
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={() => moveOutfit(outfit.id)}
-                  onDragEnd={() => setDraggedId(null)}  
-                >
-                  <button
-                    className={`favoriteBtn ${outfit.favorite ? "active" : ""}`}
-                    onClick={() => toggleFavorite(outfit.id)}
+                {filteredOutfits.map(outfit => (
+                  <article 
+                    className={`card ${deletingId === outfit.id ? "deleting" : ""} ${draggedId === outfit.id ? "dragged" : ""}`}
+                    key={outfit.id}
+                    draggable
+                    onDragStart={() => setDraggedId(outfit.id)}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={() => moveOutfit(outfit.id)}
+                    onDragEnd={() => setDraggedId(null)}  
                   >
-                    {outfit.favorite ? "❤️" : "🤍"}
-                  </button>
-                  {outfit.image ? (
-                    <img src={outfit.image} alt={outfit.title} />
-                  ) : (
-                    <div className="placeholder">OUTFIT</div>
-                  )}
+                    <button
+                      className={`favoriteBtn ${outfit.favorite ? "active" : ""}`}
+                      onClick={() => toggleFavorite(outfit.id)}
+                    >
+                      {outfit.favorite ? "❤️" : "🤍"}
+                    </button>
+                    {outfit.image ? (
+                      <img src={outfit.image} alt={outfit.title} />
+                    ) : (
+                      <div className="placeholder">OUTFIT</div>
+                    )}
 
-                  <div className="cardBody">
-                    <div className="cardTop">
-                      <div>
-                        <h2>{outfit.title}</h2>
-                        <p>{outfit.function === "Outro" ? outfit.customFunction : outfit.function}</p>
+                    <div className="cardBody">
+                      <div className="cardTop">
+                        <div>
+                          <h2>{outfit.title}</h2>
+                          <p>{outfit.function === "Outro" ? outfit.customFunction : outfit.function}</p>
+                        </div>
+
+                        <span>{outfit.style}</span>
                       </div>
 
-                      <span>{outfit.style}</span>
-                    </div>
+                      <div className="piecesList">
+                        {outfit.pieces.map((p, i) => (
+                          <div className="pieceTag" key={i}>
+                            <strong>{p.name}</strong>
+                            <small>
+                              {p.category}
+                              <span className="savedColors">
+                                {p.colors?.map((color, i) => (
+                                  <span
+                                    key={i}
+                                    className="savedColorDot"
+                                    style={{ backgroundColor: color }}
+                                  />
+                                ))}
+                              </span>
+                            </small>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="actions">
+                        <button 
+                          className="edit"
+                          onClick={() => editOutfit(outfit)}
+                        >
+                          ✏️ Editar
+                        </button>
 
-                    <div className="piecesList">
-                      {outfit.pieces.map((p, i) => (
-                        <div className="pieceTag" key={i}>
-                          <strong>{p.name}</strong>
-                          <small>
-                            {p.category}
-                            <span className="savedColors">
-                              {p.colors?.map((color, i) => (
-                                <span
-                                  key={i}
-                                  className="savedColorDot"
-                                  style={{ backgroundColor: color }}
-                                />
-                              ))}
-                            </span>
-                          </small>
-                        </div>
-                      ))}
+                        <button 
+                          className="delete"
+                          onClick={() => deleteOutfit(outfit.id)}
+                        >
+                          🗑️ Apagar
+                        </button>
+                      </div>
                     </div>
-                    <div className="actions">
-                      <button 
-                        className="edit"
-                        onClick={() => editOutfit(outfit)}
-                      >
-                        ✏️ Editar
-                      </button>
-
-                      <button 
-                        className="delete"
-                        onClick={() => deleteOutfit(outfit.id)}
-                      >
-                        🗑️ Apagar
-                      </button>
-                    </div>
-                  </div>
-                </article>
-              ))}
+                  </article>
+                ))}
+              </div>
             </div>
           </section>
         </main>
