@@ -2,10 +2,12 @@ import "./App.css";
 import { useEffect, useMemo, useState } from "react";
 
 const categories = [
-  "T-shirt", "Camisa", "Polo", "Sweatshirt", "Casaco",
-  "Calças", "Calções", "Fato", "Calçado",
-  "Relógio", "Cinto", "Mochila", "Acessório"
+  "T-shirt", "Camisa", "Polo", "Sweatshirt", "Casaco", "Zip-Up",
+  "Calças", "Calções", "Calçado", "Relógio",
+  "Headwear", "Mochila", "Acessório"
 ];
+
+const closetFilters = ["Todos", ...categories];
 
 const outfitStyles = [
   "Casual",
@@ -39,11 +41,33 @@ export default function App() {
   const [deletingId, setDeletingId] = useState(null);
   const [draggedId, setDraggedId] = useState(null);
   const [closedSuggestions, setClosedSuggestions] = useState([]);
+  const [closetFilter, setClosetFilter] = useState("Todos");
 
   const [closetItems, setClosetItems] = useState(() => {
     const saved = localStorage.getItem("closetItems");
     return saved ? JSON.parse(saved) : [];
   });
+
+  const computedClosetItems = useMemo(() => {
+    const allPieces = outfits.flatMap((o) => o.pieces || []);
+
+    const unique = [];
+    const seen = new Set();
+
+    allPieces.forEach((item) => {
+      const key = item.name + item.category;
+      if (!seen.has(key)) {
+        seen.add(key);
+        unique.push(item);
+      }
+    });
+
+    return unique;
+  }, [outfits]);
+
+  const filteredCloset = computedClosetItems.filter((item) =>
+  closetFilter === "Todos" || item.category === closetFilter
+  );
 
   const [form, setForm] = useState({
     title: "",
@@ -498,14 +522,26 @@ export default function App() {
                   <h2>Armário pessoal</h2>
                 </div>
 
-                <span>{closetItems.length} peças</span>
+                <span>{filteredCloset.length} peças</span>
+              </div>
+
+              <div className="closetFilters">
+                {["Todos", ...categories].map((cat) => (
+                  <button
+                    key={cat}
+                    className={`filterChip ${closetFilter === cat ? "active" : ""}`}
+                    onClick={() => setClosetFilter(cat)}
+                  >
+                    {cat}
+                  </button>
+                ))}
               </div>
 
               {closetItems.length === 0 ? (
                 <p className="closetEmpty">As peças aparecem aqui quando guardares outfits.</p>
               ) : (
                 <div className="closetGrid">
-                  {closetItems.map((item) => (
+                  {filteredCloset.map((item) => (
                     <div 
                       className="closetItem" 
                       key={item.id}
