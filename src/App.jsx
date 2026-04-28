@@ -512,9 +512,9 @@ export default function App() {
                       className="closetItem" 
                       key={item.id}
                       onClick={() => addClosetItemToForm(item)}
-                    >
-                      <div className="closetColors">
-                        {(item.cores || [item.corHex]).map((color, i) => (
+                    >                        
+                      <div className="closetSwatches">
+                        {(item.colors || [item.tempColor || "#ffffff"]).map((color, i) => (
                           <span
                             key={i}
                             className="closetColor"
@@ -522,12 +522,12 @@ export default function App() {
                           />
                         ))}
                       </div>
-
+         
                       <div className="closetInfo">
-                        <strong>{item.nome}</strong>
+                        <strong>{item.name}</strong>
                         <p>{item.category}</p>
                       </div>
-
+       
                       <div className="closetActions">
                         <button 
                           type="button" 
