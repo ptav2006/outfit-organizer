@@ -43,11 +43,6 @@ export default function App() {
   const [closedSuggestions, setClosedSuggestions] = useState([]);
   const [closetFilter, setClosetFilter] = useState("Todos");
 
-  const [closetItems, setClosetItems] = useState(() => {
-    const saved = localStorage.getItem("closetItems");
-    return saved ? JSON.parse(saved) : [];
-  });
-
   const computedClosetItems = useMemo(() => {
     const allPieces = outfits.flatMap((o) => o.pieces || []);
 
@@ -82,10 +77,6 @@ export default function App() {
     localStorage.setItem("outfits-masculinos", JSON.stringify(outfits));
   }, [outfits]);
 
-  useEffect(() => {
-    localStorage.setItem("closetItems", JSON.stringify(closetItems));
-  }, [closetItems]);
-
   function addPiece() {
     setForm({
       ...form,
@@ -95,8 +86,34 @@ export default function App() {
     });
   }
 
-  function deleteClosetItem(id) {
-    setClosetItems(closetItems.filter(item => item.id !== id));
+  function editClosetItem(item) {
+    const newName = prompt("Novo nome da peça:", item.name);
+    if (!newName || !newName.trim()) return;
+
+    const updatedOutfits = outfits.map((outfit) => ({
+      ...outfit,
+      pieces: (outfit.pieces || []).map((piece) =>
+        piece.name === item.name && piece.category === item.category
+          ? { ...piece, name: newName.trim() }
+          : piece
+      ),
+    }));
+
+    setOutfits(updatedOutfits);
+    localStorage.setItem("outfits-masculinos", JSON.stringify(updatedOutfits));
+  }
+
+  function deleteClosetItem(item) {
+    const updatedOutfits = outfits.map((outfit) => ({
+      ...outfit,
+      pieces: (outfit.pieces || []).filter(
+        (piece) =>
+          !(piece.name === item.name && piece.category === item.category)
+      ),
+    }));
+
+    setOutfits(updatedOutfits);
+    localStorage.setItem("outfits-masculinos", JSON.stringify(updatedOutfits));
   }
 
   function applyClosetSuggestion(pieceIndex, item) {
@@ -104,57 +121,15 @@ export default function App() {
 
     updated[pieceIndex] = {
       ...updated[pieceIndex],
-      name: item.nome,
-      category: item.categoria,
-      colors: item.cores || [item.corHex],
-      tempColor: item.corHex || "#ffffff",
+      name: item.name,
+      category: item.category,
+      colors: item.colors || [item.tempColor || "#ffffff"],
+      tempColor: item.tempColor || "#ffffff",
     };
 
     setForm({ ...form, pieces: updated });
     setClosedSuggestions([...closedSuggestions, pieceIndex]);
   }
-
-  function editClosetItem(item) {
-    const newName = prompt("Novo nome da peça:", item.nome);
-    if (!newName || !newName.trim()) return;
-
-    setClosetItems(closetItems.map(closetItem =>
-      closetItem.id === item.id
-        ? { ...closetItem, nome: newName.trim() }
-        : closetItem
-    ));
-  }
-
-  function addItemToCloset(newItem) {
-    setClosetItems((prev) => {
-      const alreadyExists = prev.find(
-        (item) =>
-          item.nome.toLowerCase() === newItem.nome.toLowerCase() &&
-          item.cor.toLowerCase() === newItem.cor.toLowerCase()
-      );
-
-    if (alreadyExists) {
-      return prev.map((item) =>
-        item.id === alreadyExists.id
-          ? { ...item, vezesUsada: item.vezesUsada + 1 }
-          : item
-      );
-    }
-
-    return [
-      ...prev,
-      {
-        id: crypto.randomUUID(),
-        nome: newItem.nome,
-        cor: newItem.cor,
-        corHex: newItem.corHex,
-        cores: newItem.cores,
-        categoria: newItem.categoria,
-        vezesUsada: 1,
-      },
-    ];
-  });
-}
 
   function deleteOutfit(id) {
   setDeletingId(id);
@@ -248,26 +223,17 @@ export default function App() {
 
     const validPieces = form.pieces.filter(p => p.name.trim());
 
-    validPieces.forEach((piece) => {
-      const mainColor = piece.colors?.[0] || piece.tempColor || "#ffffff";
-
-      addItemToCloset({
-        nome: piece.name.trim(),
-        cor: mainColor,
-        corHex: mainColor,
-        cores: piece.colors?.length ? piece.colors : [mainColor],
-        categoria: piece.category,
-      });
-    });
-
-    setOutfits([
+    const updatedOutfits = [
       {
         id: Date.now(),
         ...form,
         pieces: validPieces
       },
       ...outfits
-    ]);
+    ];
+
+    setOutfits(updatedOutfits);
+    localStorage.setItem("outfits-masculinos", JSON.stringify(updatedOutfits));
 
     setForm({
       title: "",
@@ -281,10 +247,10 @@ export default function App() {
 
   function addClosetItemToForm(item) {
     const newPiece = {
-      name: item.nome,
-      category: item.categoria,
-      colors: item.cores || [item.corHex],
-      tempColor: item.corHex || "#ffffff",
+      name: item.name,
+      category: item.category,
+      colors: item.colors || [item.tempColor || "#ffffff"],
+      tempColor: item.tempColor || "#ffffff",
     };
 
     const hasEmptyPiece = form.pieces.findIndex(p => !p.name.trim());
@@ -410,9 +376,9 @@ export default function App() {
 
                     {piece.name.trim() && !closedSuggestions.includes(index) && (
                       <div className="suggestionsBox">
-                        {closetItems
+                        {filteredCloset
                           .filter(item =>
-                            item.nome.toLowerCase().includes(piece.name.toLowerCase())
+                            item.name.toLowerCase().includes(piece.name.toLowerCase())
                           )
                           .slice(0, 5)
                           .map(item => (
@@ -423,7 +389,7 @@ export default function App() {
                               onClick={() => applyClosetSuggestion(index, item)}
                             >
                               <div className="suggestionColors">
-                                {(item.cores || [item.corHex]).map((color, i) => (
+                                {(item.colors || [item.tempColor || "#ffffff"]).map((color, i) => (
                                   <span
                                     key={i}
                                     className="suggestionColor"
@@ -432,7 +398,7 @@ export default function App() {
                                 ))}
                               </div>
 
-                              <span>{item.nome}</span>
+                              <span>{item.name}</span>
                             </button>
                           ))}
                         </div>
@@ -537,7 +503,7 @@ export default function App() {
                 ))}
               </div>
 
-              {closetItems.length === 0 ? (
+              {filteredCloset.length === 0 ? (
                 <p className="closetEmpty">As peças aparecem aqui quando guardares outfits.</p>
               ) : (
                 <div className="closetGrid">
@@ -559,7 +525,7 @@ export default function App() {
 
                       <div className="closetInfo">
                         <strong>{item.nome}</strong>
-                        <p>{item.categoria} · usada {item.vezesUsada}x</p>
+                        <p>{item.category}</p>
                       </div>
 
                       <div className="closetActions">
@@ -576,7 +542,7 @@ export default function App() {
                           type="button" 
                           onClick={(e) => {
                             e.stopPropagation();
-                            deleteClosetItem(item.id)
+                            deleteClosetItem(item)
                           }}
                         >
                           🗑️
