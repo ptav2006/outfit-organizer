@@ -42,6 +42,7 @@ export default function App() {
   const [draggedId, setDraggedId] = useState(null);
   const [closedSuggestions, setClosedSuggestions] = useState([]);
   const [closetFilter, setClosetFilter] = useState("Todos");
+  const [showCloset, setShowCloset] = useState(false);
 
   const computedClosetItems = useMemo(() => {
     const allPieces = outfits.flatMap((o) => o.pieces || []);
@@ -485,78 +486,88 @@ export default function App() {
               </select>
             </div>
 
-            <div className="closetBox">
-              <div className="closetHeader">
-                <div>
-                  <p className="tag">CLOSET</p>
-                  <h2>Armário pessoal</h2>
+            <div className="closetToggle">
+              <button type="button" onClick={() => setShowCloset(!showCloset)}>
+                {showCloset ? "Fechar closet" : "Abrir closet"}
+              </button>
+            </div>
+
+            {showCloset && (
+              <div className="closetBox">
+                <div className="closetHeader">
+                  <div>
+                    <p className="tag">CLOSET</p>
+                    <h2>Armário pessoal</h2>
+                  </div>
+
+                  <span>{filteredCloset.length} peças</span>
                 </div>
 
-                <span>{filteredCloset.length} peças</span>
-              </div>
-
-              <div className="closetFilters">
-                {["Todos", ...categories].map((cat) => (
-                  <button
-                    key={cat}
-                    className={`filterChip ${closetFilter === cat ? "active" : ""}`}
-                    onClick={() => setClosetFilter(cat)}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-
-              {filteredCloset.length === 0 ? (
-                <p className="closetEmpty">As peças aparecem aqui quando guardares outfits.</p>
-              ) : (
-                <div className="closetGrid">
-                  {filteredCloset.map((item) => (
-                    <div 
-                      className="closetItem" 
-                      key={item.id}
-                      onClick={() => addClosetItemToForm(item)}
-                    >                        
-                      <div className="closetSwatches">
-                        {(item.colors || [item.tempColor || "#ffffff"]).map((color, i) => (
-                          <span
-                            key={i}
-                            className="closetColor"
-                            style={{ backgroundColor: color }}
-                          />
-                        ))}
-                      </div>
-         
-                      <div className="closetInfo">
-                        <strong>{item.name}</strong>
-                        <p>{item.category}</p>
-                      </div>
-       
-                      <div className="closetActions">
-                        <button 
-                          type="button" 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            editClosetItem(item)
-                          }}
-                        >
-                          ✏️
-                        </button>
-                        <button 
-                          type="button" 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteClosetItem(item)
-                          }}
-                        >
-                          🗑️
-                        </button>
-                      </div>
-                    </div>
+                <div className="closetFilters">
+                  {["Todos", ...categories].map((cat) => (
+                    <button
+                      key={cat}
+                      className={`filterChip ${closetFilter === cat ? "active" : ""}`}
+                      onClick={() => setClosetFilter(cat)}
+                    >
+                      {cat}
+                    </button>
                   ))}
                 </div>
-              )}
-            </div>
+
+                {filteredCloset.length === 0 ? (
+                  <p className="closetEmpty">As peças aparecem aqui quando guardares outfits.</p>
+                ) : (
+                  <div className="closetGrid">
+                    {filteredCloset.map((item) => (
+                      <div 
+                        className="closetItem" 
+                        key={item.id}
+                        onClick={() => addClosetItemToForm(item)}
+                      >                        
+                        <div className="closetSwatches">
+                          {(item.colors || [item.tempColor || "#ffffff"]).map((color, i) => (
+                            <span
+                              key={i}
+                              className="closetColor"
+                              style={{ backgroundColor: color }}
+                            />
+                          ))}
+                        </div>
+          
+                        <div className="closetInfo">
+                          <strong>{item.name}</strong>
+                          <p>{item.category}</p>
+                        </div>
+        
+                        <div className="closetActions">
+                          <button 
+                            type="button" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              editClosetItem(item)
+                            }}
+                          >
+                            ✏️
+                          </button>
+                          <button 
+                            type="button" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteClosetItem(item)
+                            }}
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+
             <div className="cardsWrapper">
               <div className="cards">
                 {filteredOutfits.length === 0 && (

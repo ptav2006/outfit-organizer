@@ -1120,6 +1120,24 @@ body {
   color: #475569;
 }
 
+.closetToggle {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 18px;
+}
+
+.closetToggle button {
+  border: none;
+  border-radius: 999px;
+  padding: 14px 24px;
+  font-weight: 800;
+  font-size: 16px;
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+  cursor: pointer;
+}
+
 .pieceNameArea {
   position: relative;
 }
