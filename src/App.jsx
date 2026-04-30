@@ -31,9 +31,16 @@ const outfitFunctions = [
 
 export default function App() {
   const [outfits, setOutfits] = useState(() => {
-    return JSON.parse(localStorage.getItem("outfits-masculinos")) || [];
+    const savedOutfits = JSON.parse(localStorage.getItem("outfits-masculinos")) || [];
+
+    return savedOutfits.map(outfit => ({
+      ...outfit,
+      pieces: (outfit.pieces || []).map(piece => ({
+        ...piece,
+        unavailable: piece.unavailable ?? false
+      }))
+    }));
   });
-  
   const [saved, setSaved] = useState(false);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("Todos");
@@ -43,7 +50,8 @@ export default function App() {
   const [closedSuggestions, setClosedSuggestions] = useState([]);
   const [closetFilter, setClosetFilter] = useState("Todos");
   const [showCloset, setShowCloset] = useState(false);
-
+  const [laundryMode, setLaundryMode] = useState(false);
+  
   const computedClosetItems = useMemo(() => {
     const allPieces = outfits.flatMap((o) => o.pieces || []);
 
@@ -61,9 +69,9 @@ export default function App() {
     return unique;
   }, [outfits]);
 
-  const filteredCloset = computedClosetItems.filter((item) =>
-  closetFilter === "Todos" || item.category === closetFilter
-  );
+  const filteredCloset = computedClosetItems.filter((item) => {
+    return closetFilter === "Todos" || item.category === closetFilter;
+  });
 
   const [form, setForm] = useState({
     title: "",
@@ -71,7 +79,7 @@ export default function App() {
     function: "Universidade",
     customFunction: "",
     image: "",
-    pieces: [{ name: "", category: "T-shirt", colors: [], tempColor: "#ffffff" }]
+    pieces: [{ name: "", category: "T-shirt", colors: [], tempColor: "#ffffff", unavailable: false }]
   });
 
   useEffect(() => {
@@ -83,7 +91,7 @@ export default function App() {
       ...form,
       pieces: [
         ...form.pieces,
-        { name: "", category: "T-shirt", colors: [], tempColor: "#ffffff" }]
+        { name: "", category: "T-shirt", colors: [], tempColor: "#ffffff", unavailable: false }]
     });
   }
 
@@ -190,6 +198,20 @@ export default function App() {
     setForm({ ...form, pieces: updated });
   }
 
+  const toggleUnavailable = (item) => {
+    const updatedOutfits = outfits.map(outfit => ({
+      ...outfit,
+      pieces: (outfit.pieces || []).map(piece =>
+        piece.name === item.name && piece.category === item.category
+          ? { ...piece, unavailable: !piece.unavailable }
+          : piece
+      )
+    }));
+
+    setOutfits(updatedOutfits);
+    localStorage.setItem("outfits-masculinos", JSON.stringify(updatedOutfits));
+  };
+
 
   function removePiece(index) {
     setForm({
@@ -212,7 +234,7 @@ export default function App() {
         customFunction: "",
         style: "Casual",
         image: "",
-        pieces: [{ name: "", category: "T-shirt", colors: [], tempColor: "#ffffff" }]
+        pieces: [{ name: "", category: "T-shirt", colors: [], tempColor: "#ffffff", unavailable: false }]
       });
 
       return;
@@ -242,7 +264,7 @@ export default function App() {
       customFunction: "",
       style: "Casual",
       image: "",
-      pieces: [{ name: "", category: "T-shirt", colors: [], tempColor: "#ffffff" }]
+      pieces: [{ name: "", category: "T-shirt", colors: [], tempColor: "#ffffff", unavailable: false }]
     });
   }
 
@@ -252,6 +274,7 @@ export default function App() {
       category: item.category,
       colors: item.colors || [item.tempColor || "#ffffff"],
       tempColor: item.tempColor || "#ffffff",
+      unavailable: false
     };
 
     const hasEmptyPiece = form.pieces.findIndex(p => !p.name.trim());
@@ -487,6 +510,16 @@ export default function App() {
             </div>
 
             <div className="closetToggle">
+              {showCloset && (
+              <button
+                type="button"
+                className={`laundryButtonInline ${laundryMode ? "active" : ""}`}
+                onClick={() => setLaundryMode(!laundryMode)}
+              >
+                🧺
+              </button>
+              )}
+              
               <button type="button" onClick={() => setShowCloset(!showCloset)}>
                 {showCloset ? "Fechar closet" : "Abrir closet"}
               </button>
@@ -521,9 +554,15 @@ export default function App() {
                   <div className="closetGrid">
                     {filteredCloset.map((item) => (
                       <div 
-                        className="closetItem" 
+                        className={`closetItem ${item.unavailable ? "unavailable" : ""}`}
                         key={item.id}
-                        onClick={() => addClosetItemToForm(item)}
+                        onClick={() => {
+                          if (laundryMode) {
+                            toggleUnavailable(item);
+                          } else {
+                            addClosetItemToForm(item);
+                          }
+                        }}
                       >                        
                         <div className="closetSwatches">
                           {(item.colors || [item.tempColor || "#ffffff"]).map((color, i) => (
@@ -533,6 +572,11 @@ export default function App() {
                               style={{ backgroundColor: color }}
                             />
                           ))}
+
+                        {item.unavailable && (
+                          <span className="laundryBadge">🧺</span>
+                        )}
+
                         </div>
           
                         <div className="closetInfo">
