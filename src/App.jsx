@@ -161,8 +161,12 @@ export default function App() {
   }
 
   function editOutfit(outfit) {
-  setForm(outfit);
-  setEditingId(outfit.id);
+    setForm(outfit);
+    setEditingId(outfit.id);
+
+    setClosedSuggestions(
+      (outfit.pieces || []).map((_, index) => index)
+    );
   }
 
   function toggleFavorite(id) {
