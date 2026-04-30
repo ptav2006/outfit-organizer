@@ -1293,6 +1293,13 @@ body {
   animation: badgePop 0.22s ease;
 }
 
+.laundryText {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  opacity: 0.7;
+}
+
 @keyframes badgePop {
   from {
     opacity: 0;

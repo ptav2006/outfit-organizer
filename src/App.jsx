@@ -66,6 +66,11 @@ export default function App() {
       }
     });
 
+    unique.sort((a, b) => {
+      if (a.unavailable === b.unavailable) return 0;
+      return a.unavailable ? 1: -1;
+    });
+
     return unique;
   }, [outfits]);
 
@@ -511,15 +516,21 @@ export default function App() {
 
             <div className="closetToggle">
               {showCloset && (
-              <button
-                type="button"
-                className={`laundryButtonInline ${laundryMode ? "active" : ""}`}
-                onClick={() => setLaundryMode(!laundryMode)}
-              >
-                🧺
-              </button>
+                <>
+                  <button
+                    type="button"
+                    className={`laundryButtonInline ${laundryMode ? "active" : ""}`}
+                    onClick={() => setLaundryMode(!laundryMode)}
+                  >
+                    🧺
+                  </button>
+
+                  {laundryMode && (
+                    <span className="laundryText">Modo Lavandaria Ativo</span>
+                  )}
+                </>
               )}
-              
+
               <button type="button" onClick={() => setShowCloset(!showCloset)}>
                 {showCloset ? "Fechar closet" : "Abrir closet"}
               </button>
