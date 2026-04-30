@@ -349,7 +349,7 @@ export default function App() {
 
         <main className="layout">
           <section className="panel">
-            <h2 className="form-title">New outfit</h2>
+            <h2 className="form-title">Criar look</h2>
 
             <form onSubmit={addOutfit}>
               <input
@@ -389,7 +389,7 @@ export default function App() {
 
               {form.image && <img className="preview" src={form.image} alt="Preview" />}
 
-              <h3>Peças do outfit</h3>
+              <h3>Composição do look</h3>
 
               {form.pieces.map((piece, index) => (
                 <div className="piece" key={index}>
