@@ -41,7 +41,7 @@ export default function App() {
       }))
     }));
   });
-  const [saved, setSaved] = useState(false);
+  const [saveStatus, setSaveStatus] = useState(null);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("Todos");
   const [editingId, setEditingId] = useState(null);
@@ -229,6 +229,9 @@ export default function App() {
     e.preventDefault();
     if (!form.title.trim()) return;
     if (editingId) {
+      setSaveStatus("updated");
+      setTimeout(() => setSaveStatus(null), 1400);
+
       setOutfits(outfits.map(outfits => outfits.id === editingId ? { ...form, id: editingId, pieces: form.pieces.filter(p => p.name.trim()) } : outfits
     ));
       setEditingId(null);
@@ -245,9 +248,9 @@ export default function App() {
       return;
     }
 
-    setSaved(true);
+    setSaveStatus("saved");
 
-    setTimeout(() => setSaved(false), 1400);
+    setTimeout(() => setSaveStatus(null), 1400);
 
     const validPieces = form.pieces.filter(p => p.name.trim());
 
@@ -493,8 +496,14 @@ export default function App() {
                 + Adicionar peça
               </button>
 
-              <button className={`primary ${saved ? "savedBtn" : ""}`}>
-                {saved ? "Guardado ✅" : editingId ? "Atualizar outfit" : "Guardar outfit"}
+              <button className={`primary ${saveStatus ? "savedBtn" : ""}`}>
+                 {saveStatus === "saved"
+                 ? "Guardado ✅"
+                 : saveStatus === "updated"
+                 ? "Atualizado ✅"
+                 : editingId
+                 ? "Atualizar look"
+                 : "Guardar look"}               
               </button>
             </form>
           </section>
