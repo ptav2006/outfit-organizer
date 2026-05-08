@@ -64,6 +64,7 @@ export default function App() {
     category: "T-shirt",
     colors: [],
     tempColor: "#000000",
+    image: "",
     unavailable: false,
   });
   
@@ -105,6 +106,7 @@ export default function App() {
       colors: newClosetItem.colors.length > 0 
         ? newClosetItem.colors 
         : [newClosetItem.tempColor],
+      image: newClosetItem.image,
       unavailable: newClosetItem.unavailable,
     };
 
@@ -115,6 +117,7 @@ export default function App() {
       category: "T-shirt",
       colors: [],
       tempColor: "#000000",
+      image: "",
       unavailable: false,
     });
 
@@ -382,6 +385,22 @@ export default function App() {
     });
 
     setClosedSuggestions(prev => [...prev, form.pieces.length]);
+  }
+
+  function handleClosetImage(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setNewClosetItem((prev) => ({
+        ...prev,
+        image: reader.result,
+      }));
+    };
+
+    reader.readAsDataURL(file);
   }
 
   function handleImage(e) {
@@ -673,6 +692,23 @@ export default function App() {
                         </option>
                       ))}
                     </select>
+
+                    <label className="closetUpload">
+                      {newClosetItem.image ? "Imagem escolhida ✅" : "Adicionar imagem"}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleClosetImage}
+                      />
+                    </label>
+
+                    {newClosetItem.image && (
+                      <img
+                        src={newClosetItem.image}
+                        alt="Preview"
+                        className="closetPreview"
+                      />
+                    )}
 
                     <div className="closetColorPicker">
                       <input

@@ -1410,6 +1410,35 @@ body {
   margin-left: 0;
 }
 
+.closetUpload {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 18px;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.08);
+  border: 1px dashed rgba(15, 23, 42, 0.18);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.closetUpload:hover {
+  background: rgba(15, 23, 42, 0.12);
+}
+
+.closetUpload input {
+  display: none;
+}
+
+.closetPreview {
+  width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+  border-radius: 22px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
 
 
 
