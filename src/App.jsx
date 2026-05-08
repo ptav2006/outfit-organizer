@@ -51,6 +51,21 @@ export default function App() {
   const [closetFilter, setClosetFilter] = useState("Todos");
   const [showCloset, setShowCloset] = useState(false);
   const [laundryMode, setLaundryMode] = useState(false);
+
+  const [manualClosetItems, setManualClosetItems] = useState(() => {
+    const saved = localStorage.getItem("manual-closet-items");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [showAddClosetItem, setShowAddClosetItem] = useState(false);
+
+  const [newClosetItem, setNewClosetItem] = useState({
+    name: "",
+    category: "T-shirt",
+    colors: [],
+    tempColor: "#000000",
+    unavailable: false,
+  });
   
   const computedClosetItems = useMemo(() => {
     const allPieces = outfits.flatMap((o) => o.pieces || []);
@@ -60,6 +75,7 @@ export default function App() {
 
     allPieces.forEach((item) => {
       const key = item.name + item.category;
+
       if (!seen.has(key)) {
         seen.add(key);
         unique.push(item);
@@ -71,8 +87,40 @@ export default function App() {
       return a.unavailable ? 1: -1;
     });
 
-    return unique;
-  }, [outfits]);
+    return [...unique, ...manualClosetItems];
+
+  }, [outfits, manualClosetItems]);
+
+  useEffect(() => {
+    localStorage.setItem("manual-closet-items", JSON.stringify(manualClosetItems));
+  }, [manualClosetItems]);
+
+  function addManualClosetItem() {
+    if (!newClosetItem.name.trim()) return;
+
+    const item = {
+      id: crypto.randomUUID(),
+      name: newClosetItem.name.trim(),
+      category: newClosetItem.category,
+      colors: newClosetItem.colors.length > 0 
+        ? newClosetItem.colors 
+        : [newClosetItem.tempColor],
+      unavailable: newClosetItem.unavailable,
+    };
+
+    setManualClosetItems((prev) => [...prev, item]);
+
+    setNewClosetItem({
+      name: "",
+      category: "T-shirt",
+      colors: [],
+      tempColor: "#000000",
+      unavailable: false,
+    });
+
+    setShowAddClosetItem(false);
+  }
+
 
   const filteredCloset = computedClosetItems.filter((item) => {
     return closetFilter === "Todos" || item.category === closetFilter;
@@ -104,6 +152,22 @@ export default function App() {
     const newName = prompt("Novo nome da peça:", item.name);
     if (!newName || !newName.trim()) return;
 
+    const isManualItem = manualClosetItems.some(
+      (manualItem) => manualItem.id === item.id
+    );
+
+    if (isManualItem) {
+      setManualClosetItems((prev) =>
+        prev.map((manualItem) =>
+          manualItem.id === item.id
+            ? { ...manualItem, name: newName.trim() }
+            : manualItem
+        )
+      );
+
+      return;
+    }
+
     const updatedOutfits = outfits.map((outfit) => ({
       ...outfit,
       pieces: (outfit.pieces || []).map((piece) =>
@@ -118,6 +182,18 @@ export default function App() {
   }
 
   function deleteClosetItem(item) {
+    const isManualItem = manualClosetItems.some(
+      (manualItem) => manualItem.id === item.id
+    );
+
+    if (isManualItem) {
+      setManualClosetItems((prev) =>
+        prev.filter((manualItem) => manualItem.id !== item.id)
+      );
+
+      return;
+    }
+
     const updatedOutfits = outfits.map((outfit) => ({
       ...outfit,
       pieces: (outfit.pieces || []).filter(
@@ -555,10 +631,93 @@ export default function App() {
                   <div>
                     <p className="tag">CLOSET</p>
                     <h2>Armário pessoal</h2>
-                  </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="addClosetBtn"
+                      onClick={() => setShowAddClosetItem((prev) => !prev)}
+                    >
+                      + Nova peça
+                    </button>
 
                   <span>{filteredCloset.length} peças</span>
                 </div>
+
+                {showAddClosetItem && (
+                  <div className="addClosetForm">
+                    <input
+                      type="text"
+                      placeholder="Nome da peça"
+                      value={newClosetItem.name}
+                      onChange={(e) =>
+                        setNewClosetItem((prev) => ({
+                          ...prev,
+                          name: e.target.value,
+                        }))
+                      }
+                    />
+
+                    <select
+                      value={newClosetItem.category}
+                      onChange={(e) =>
+                        setNewClosetItem((prev) => ({
+                          ...prev,
+                          category: e.target.value,
+                        }))
+                      }
+                    >
+                      {categories.map((category) => (
+                        <option key={category} value={category}>
+                          {category}
+                        </option>
+                      ))}
+                    </select>
+
+                    <div className="closetColorPicker">
+                      <input
+                        type="color"
+                        value={newClosetItem.tempColor}
+                        onChange={(e) =>
+                          setNewClosetItem((prev) => ({
+                            ...prev,
+                            tempColor: e.target.value,
+                          }))
+                        }
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setNewClosetItem((prev) => ({
+                            ...prev,
+                            colors: [...prev.colors, prev.tempColor],
+                          }))
+                        }
+                      >
+                        Adicionar cor
+                      </button>
+                    </div>
+
+                    <div className="closetSelectedColors">
+                      {newClosetItem.colors.map((color, index) => (
+                        <span
+                          key={`${color}-${index}`}
+                          className="closetColorDot"
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                    </div>
+
+                    <button
+                      type="button"
+                      className="saveClosetItemBtn"
+                      onClick={addManualClosetItem}
+                    >
+                      Guardar peça
+                    </button>
+                  </div>
+                )}
 
                 <div className="closetFilters">
                   {["Todos", ...categories].map((cat) => (

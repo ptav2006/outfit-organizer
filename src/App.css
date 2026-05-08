@@ -1330,6 +1330,86 @@ body {
   }
 }
 
+.addClosetBtn {
+  border: none;
+  padding: 11px 18px;
+  border-radius: 999px;
+  background: #111827;
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 12px 28px rgba(17, 24, 39, 0.22);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.addClosetBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(17, 24, 39, 0.28);
+}
+
+.addClosetForm {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  display: grid;
+  gap: 12px;
+}
+
+.addClosetForm input,
+.addClosetForm select {
+  width: 100%;
+  padding: 13px 15px;
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  outline: none;
+  font-weight: 700;
+}
+
+.closetColorPicker {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.closetColorPicker input[type="color"] {
+  width: 52px;
+  height: 44px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.closetColorPicker button,
+.saveClosetItemBtn {
+  border: none;
+  padding: 12px 16px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.92);
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.closetSelectedColors {
+  display: flex;
+  align-items: center;
+  padding-left: 6px;
+}
+
+.closetSelectedColors .closetColorDot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid white;
+  margin-left: -6px;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.18);
+}
+
+.closetSelectedColors .closetColorDot:first-child {
+  margin-left: 0;
+}
+
 
 
 
