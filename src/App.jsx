@@ -135,7 +135,7 @@ export default function App() {
     function: "Universidade",
     customFunction: "",
     image: "",
-    pieces: [{ name: "", category: "T-shirt", colors: [], tempColor: "#ffffff", unavailable: false }]
+    pieces: [{ name: "", category: "T-shirt", colors: [], tempColor: "#ffffff", image: "", unavailable: false }]
   });
 
   useEffect(() => {
@@ -147,7 +147,7 @@ export default function App() {
       ...form,
       pieces: [
         ...form.pieces,
-        { name: "", category: "T-shirt", colors: [], tempColor: "#ffffff", unavailable: false }]
+        { name: "", category: "T-shirt", colors: [], tempColor: "#ffffff", image: "", unavailable: false }]
     });
   }
 
@@ -325,7 +325,7 @@ export default function App() {
         customFunction: "",
         style: "Casual",
         image: "",
-        pieces: [{ name: "", category: "T-shirt", colors: [], tempColor: "#ffffff", unavailable: false }]
+        pieces: [{ name: "", category: "T-shirt", colors: [], tempColor: "#ffffff", image: "", unavailable: false }]
       });
 
       return;
@@ -355,7 +355,7 @@ export default function App() {
       customFunction: "",
       style: "Casual",
       image: "",
-      pieces: [{ name: "", category: "T-shirt", colors: [], tempColor: "#ffffff", unavailable: false }]
+      pieces: [{ name: "", category: "T-shirt", colors: [], tempColor: "#ffffff", image: "", unavailable: false }]
     });
   }
 
@@ -398,6 +398,26 @@ export default function App() {
         ...prev,
         image: reader.result,
       }));
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  function handlePieceImage(e, index) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const updated = [...form.pieces];
+
+      updated[index] = {
+        ...updated[index],
+        image: reader.result,
+      };
+
+      setForm({ ...form, pieces: updated });
     };
 
     reader.readAsDataURL(file);
@@ -540,22 +560,28 @@ export default function App() {
                       )}
                     </div>
 
-                  <div className="grid2">
-                    <select
-                      value={piece.category}
-                      onChange={e => updatePiece(index, "category", e.target.value)}
-                    >
-                      {categories.map(c => <option key={c}>{c}</option>)}
-                    </select>
+                  <div className="pieceControls">
+                    <div className="controlGroup">
+                      <span className="controlLabel">Categoria</span>
 
-                    <div className="colorArea">
+                      <select
+                        value={piece.category}
+                        onChange={e => updatePiece(index, "category", e.target.value)}
+                      >
+                        {categories.map(c => <option key={c}>{c}</option>)}
+                      </select>
+                    </div>
+
+                    <div className="controlGroup colorGroup">
+                      <span className="controlLabel">Cor</span>
+
                       <div className="colorPickerRow">
                         <input
                           type="color"
                           value={piece.tempColor || "#ffffff"}
                           onChange={e => updatePiece(index, "tempColor", e.target.value)}
                           className="colorPicker"
-                          />
+                        />
 
                         <button
                           type="button"
@@ -567,18 +593,20 @@ export default function App() {
                       </div>
                     </div>
 
-                      <div className="colorsPreview">
-                        {piece.colors?.map((color, colorIndex) => (
-                          <span
-                            key={colorIndex}
-                            className="colorDot"
-                            style={{ backgroundColor: color }}
-                            onClick={() => removeColorFromPiece(index, colorIndex)}
-                          />
-                        ))}
-                      </div>
-                    </div>
+                    <div className="controlGroup">
+                      <span className="controlLabel">Foto</span>
 
+                      <label className="pieceImageUpload">
+                        + Foto
+
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handlePieceImage(e, index)}
+                        />
+                      </label>
+                    </div>
+                  </div>
                   {form.pieces.length > 1 && (
                     <button
                       type="button"
