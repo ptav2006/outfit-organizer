@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 const categories = [
   "T-shirt", "Camisa", "Polo", "Sweatshirt", "Casaco", "Zip-Up",
   "Calças", "Calções", "Calçado", "Relógio",
-  "Headwear", "Mochila", "Acessório"
+  "Headwear", "Acessório"
 ];
 
 const closetFilters = ["Todos", ...categories];
@@ -65,6 +65,7 @@ export default function App() {
     colors: [],
     tempColor: "#000000",
     image: "",
+    favorite: false,
     unavailable: false,
   });
   
@@ -107,6 +108,7 @@ export default function App() {
         ? newClosetItem.colors 
         : [newClosetItem.tempColor],
       image: newClosetItem.image,
+      favorite: false,
       unavailable: newClosetItem.unavailable,
     };
 
@@ -118,16 +120,23 @@ export default function App() {
       colors: [],
       tempColor: "#000000",
       image: "",
+      favorite: false,
       unavailable: false,
     });
 
     setShowAddClosetItem(false);
   }
 
-
   const filteredCloset = computedClosetItems.filter((item) => {
-    return closetFilter === "Todos" || item.category === closetFilter;
+    if (closetFilter === "Todos") return true;
+
+    if (closetFilter === "Favoritos") {
+      return item.favorite;
+    }
+
+    return item.category === closetFilter;
   });
+
 
   const [form, setForm] = useState({
     title: "",
@@ -254,7 +263,39 @@ export default function App() {
       ? { ...outfit, favorite: !outfit.favorite }
       : outfit
   ));
-}
+  }
+
+  function toggleClosetFavorite(item) {
+    const isManualItem = manualClosetItems.some(
+      (manualItem) => manualItem.id === item.id
+    );
+
+    if (isManualItem) {
+      setManualClosetItems((prev) =>
+        prev.map((manualItem) =>
+          manualItem.id === item.id
+            ? { ...manualItem, favorite: !manualItem.favorite }
+            : manualItem
+        )
+      );
+
+      return;
+    }
+
+    const updatedOutfits = outfits.map((outfit) => ({
+      ...outfit,
+      pieces: (outfit.pieces || []).map((piece) =>
+        piece.name === item.name && piece.category === item.category
+          ? { ...piece, favorite: !piece.favorite }
+          : piece
+      ),
+    }));
+
+    setOutfits(updatedOutfits);
+    localStorage.setItem("outfits-masculinos", JSON.stringify(updatedOutfits));
+  }
+
+
 
   function addColorToPiece(index) {
     const updated = [...form.pieces];
@@ -784,7 +825,7 @@ export default function App() {
                 )}
 
                 <div className="closetFilters">
-                  {["Todos", ...categories].map((cat) => (
+                  {["Todos", "Favoritos", ...categories].map((cat) => (
                     <button
                       key={cat}
                       className={`filterChip ${closetFilter === cat ? "active" : ""}`}
@@ -830,6 +871,17 @@ export default function App() {
                           <strong>{item.name}</strong>
                           <p>{item.category}</p>
                         </div>
+
+                        <button
+                          type="button"
+                          className={`closetFavoriteBtn ${item.favorite ? "active" : ""}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleClosetFavorite(item);
+                          }}
+                        >
+                          {item.favorite ? "❤️" : "🤍"}
+                        </button>
         
                         <div className="closetActions">
                           <button 

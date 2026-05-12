@@ -1497,6 +1497,38 @@ body {
   padding-left: 0;
 }
 
+.closetFavoriteBtn {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.82);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  font-size: 18px;
+
+  transition: all 0.2s ease;
+
+  backdrop-filter: blur(8px);
+}
+
+.closetFavoriteBtn:hover {
+  transform: scale(1.08);
+  background: white;
+}
+
+.closetFavoriteBtn.active {
+  background: rgba(255, 226, 226, 0.95);
+}
+
 
 
 
