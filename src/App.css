@@ -1287,19 +1287,27 @@ body {
   transition: opacity 0.25s ease, filter 0.25s ease, transform 0.25s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
-
-
 .laundryBadge {
   position: absolute;
-  right: 18px;
-  bottom: 16px;
-  padding: 7px 12px;
+
+  bottom: 12px;
+  left: 12px;
+
+  width: 26px;
+  height: 26px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   border-radius: 999px;
-  background: #111827;
+
+  background: rgba(15, 23, 42, 0.92);
   color: white;
-  font-size: 12px;
-  font-weight: 800;
-  animation: badgePop 0.22s ease;
+
+  font-size: 13px;
+
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
 }
 
 .laundryText {
