@@ -51,6 +51,7 @@ export default function App() {
   const [closetFilter, setClosetFilter] = useState("Todos");
   const [showCloset, setShowCloset] = useState(false);
   const [laundryMode, setLaundryMode] = useState(false);
+  const [previewClosetItem, setPreviewClosetItem] = useState(null);
 
   const [manualClosetItems, setManualClosetItems] = useState(() => {
     const saved = localStorage.getItem("manual-closet-items");
@@ -70,27 +71,43 @@ export default function App() {
   });
   
   const computedClosetItems = useMemo(() => {
-    const allPieces = outfits.flatMap((o) => o.pieces || []);
+    const allPiecesFromOutfits = outfits.flatMap((outfit) =>
+      (outfit.pieces || []).map((piece) => ({
+        ...piece,
+        id: piece.id || `${piece.name}-${piece.category}`,
+        source: "outfit",
+        closetKey: `${piece.name.trim().toLowerCase()}-${piece.category}`,
+        unavailable: piece.unavailable ?? false,
+        favorite: piece.favorite ?? false,
+      }))
+    );
 
     const unique = [];
     const seen = new Set();
 
-    allPieces.forEach((item) => {
-      const key = item.name + item.category;
-
-      if (!seen.has(key)) {
-        seen.add(key);
+    allPiecesFromOutfits.forEach((item) => {
+      if (!seen.has(item.closetKey)) {
+        seen.add(item.closetKey);
         unique.push(item);
       }
     });
 
-    unique.sort((a, b) => {
+    const manualItems = manualClosetItems.map((item) => ({
+      ...item,
+      source: "manual",
+      closetKey: item.id,
+      unavailable: item.unavailable ?? false,
+      favorite: item.favorite ?? false,
+    }));
+
+    const combined = [...unique, ...manualItems];
+
+    combined.sort((a, b) => {
       if (a.unavailable === b.unavailable) return 0;
-      return a.unavailable ? 1: -1;
+      return a.unavailable ? 1 : -1;
     });
 
-    return [...unique, ...manualClosetItems];
-
+    return combined;
   }, [outfits, manualClosetItems]);
 
   useEffect(() => {
@@ -328,18 +345,44 @@ export default function App() {
   }
 
   const toggleUnavailable = (item) => {
-    const updatedOutfits = outfits.map(outfit => ({
+    if (item.source === "manual") {
+      setManualClosetItems((prev) =>
+        prev.map((manualItem) =>
+          manualItem.id === item.id
+            ? { ...manualItem, unavailable: !manualItem.unavailable }
+            : manualItem
+        )
+      );
+
+      return;
+    }
+
+    const updatedOutfits = outfits.map((outfit) => ({
       ...outfit,
-      pieces: (outfit.pieces || []).map(piece =>
+      pieces: (outfit.pieces || []).map((piece) =>
         piece.name === item.name && piece.category === item.category
           ? { ...piece, unavailable: !piece.unavailable }
           : piece
-      )
+      ),
     }));
 
     setOutfits(updatedOutfits);
     localStorage.setItem("outfits-masculinos", JSON.stringify(updatedOutfits));
   };
+
+  function handleClosetItemClick(item) {
+    if (laundryMode) {
+      toggleUnavailable(item);
+      return;
+    }
+
+    if (item.image) {
+      setPreviewClosetItem(item);
+      return;
+    }
+
+    addClosetItemToForm(item);
+  }
 
 
   function removePiece(index) {
@@ -406,6 +449,7 @@ export default function App() {
       category: item.category,
       colors: item.colors || [item.tempColor || "#ffffff"],
       tempColor: item.tempColor || "#ffffff",
+      image: item.image || "",
       unavailable: false
     };
 
@@ -843,13 +887,9 @@ export default function App() {
                     {filteredCloset.map((item) => (
                       <div 
                         className={`closetItem ${item.unavailable ? "unavailable" : ""}`}
-                        key={item.id}
+                        key={item.closetKey || item.id}
                         onClick={() => {
-                          if (laundryMode) {
-                            toggleUnavailable(item);
-                          } else {
-                            addClosetItemToForm(item);
-                          }
+                          handleClosetItemClick(item);
                         }}
                       >                        
                         <div className="closetSwatches">
@@ -994,6 +1034,57 @@ export default function App() {
             </div>
           </section>
         </main>
+
+        {previewClosetItem && (
+          <div 
+            className="imageOverlay"
+            onClick={() => setPreviewClosetItem(null)}
+          >
+            <div 
+              className="imagePreviewModal"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                className="closePreviewBtn"
+                onClick={() => setPreviewClosetItem(null)}
+              >
+                ×
+              </button>
+
+              <img 
+                src={previewClosetItem.image} 
+                alt={previewClosetItem.name} 
+              />
+
+              <div className="imagePreviewInfo">
+                <h3>{previewClosetItem.name}</h3>
+                <p>{previewClosetItem.category}</p>
+
+                <div className="imagePreviewColors">
+                  {(previewClosetItem.colors || [previewClosetItem.tempColor || "#ffffff"]).map((color, index) => (
+                    <span
+                      key={`${color}-${index}`}
+                      className="imagePreviewColor"
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  className="addFromPreviewBtn"
+                  onClick={() => {
+                    addClosetItemToForm(previewClosetItem);
+                    setPreviewClosetItem(null);
+                  }}
+                >
+                  + Adicionar ao look
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>  
   );
 }
