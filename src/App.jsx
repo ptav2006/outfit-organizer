@@ -536,6 +536,24 @@ export default function App() {
     return result;
   }, [outfits, search, filter]);
 
+  const unavailablePieceKeys = useMemo(() => {
+    return new Set(
+      computedClosetItems
+        .filter((item) => item.unavailable)
+        .map((item) => `${(item.name || "").trim().toLowerCase()}-${item.category}`)
+    );
+  }, [computedClosetItems]);
+
+  function getUnavailablePiecesCount(outfit) {
+    return (outfit.pieces || []).filter((piece) =>
+      unavailablePieceKeys.has(
+        `${(piece.name || "").trim().toLowerCase()}-${piece.category}`
+      )
+    ).length;
+  }
+
+  
+
   return (
       <div className="app">
         <header className="hero">
@@ -992,6 +1010,17 @@ export default function App() {
 
                         <span>{outfit.style}</span>
                       </div>
+
+                      {getUnavailablePiecesCount(outfit) > 0 && (
+                        <div className="outfitLaundryBar">
+                          <span>🧺</span>
+                          <strong>
+                            {getUnavailablePiecesCount(outfit) === 1
+                              ? "1 peça deste outfit está para lavar"
+                              : `${getUnavailablePiecesCount(outfit)} peças deste outfit estão para lavar`}
+                          </strong>
+                        </div>
+                      )}
 
                       <div className="piecesList">
                         {outfit.pieces.map((p, i) => (
