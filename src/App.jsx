@@ -544,11 +544,17 @@ export default function App() {
     );
   }, [computedClosetItems]);
 
+  function getPieceKey(piece) {
+    return `${(piece.name || "").trim().toLowerCase()}-${piece.category}`;
+  }
+
+  function isPieceUnavailable(piece) {
+    return unavailablePieceKeys.has(getPieceKey(piece));
+  }
+
   function getUnavailablePiecesCount(outfit) {
     return (outfit.pieces || []).filter((piece) =>
-      unavailablePieceKeys.has(
-        `${(piece.name || "").trim().toLowerCase()}-${piece.category}`
-      )
+      isPieceUnavailable(piece)
     ).length;
   }
 
@@ -930,6 +936,12 @@ export default function App() {
                           <p>{item.category}</p>
                         </div>
 
+                        {item.image && (
+                          <span className="closetPhotoIcon" title="Tem fotografia">
+                            📷
+                          </span>
+                        )}
+
                         <button
                           type="button"
                           className={`closetFavoriteBtn ${item.favorite ? "active" : ""}`}
@@ -1024,8 +1036,12 @@ export default function App() {
 
                       <div className="piecesList">
                         {outfit.pieces.map((p, i) => (
-                          <div className="pieceTag" key={i}>
+                          <div
+                            className={`pieceTag ${isPieceUnavailable(p) ? "pieceTagLaundry" : ""}`}
+                            key={i}
+                          >
                             <strong>{p.name}</strong>
+
                             <small>
                               {p.category}
                               <span className="savedColors">
