@@ -410,26 +410,36 @@ button {
 }
 
 .pieceTag {
+  position: relative;
   padding: 14px 16px;
   border-radius: 18px;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  display: flex;
-  justify-content: space-between;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
+  gap: 12px;
 }
 
 .pieceTag strong {
   color: #0f172a;
   font-size: 16px;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .pieceTag small {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 8px;
+
   font-size: 14px;
   color: #64748b;
+
+  min-width: 0;
+  white-space: nowrap;
 }
 
 .delete {
@@ -548,15 +558,26 @@ button {
   background: #2563eb;
 }
 
-.colorsPreview,
-.savedColors {
+.colorsPreview {
   display: flex;
   gap: 6px;
   margin-top: 0;
 }
 
-.colorDot,
-.savedColorDot {
+.savedColors {
+  display: inline-flex;
+  align-items: center;
+  flex-direction: row-reverse;
+
+  margin-top: 0;
+  margin-left: 6px;
+
+  flex-shrink: 0;
+  max-width: 38px;
+  overflow: visible;
+}
+
+.colorDot {
   width: 16px;
   height: 16px;
   border-radius: 50%;
@@ -567,6 +588,16 @@ button {
 .savedColorDot {
   width: 16px;
   height: 16px;
+
+  border-radius: 50%;
+  border: 2px solid white;
+
+  box-shadow: 0 0 0 1px #cbd5e1;
+  margin-left: -6px;
+}
+
+.savedColorDot:last-child {
+  margin-left: 0;
 }
 
 .edit, 
