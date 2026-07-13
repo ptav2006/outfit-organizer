@@ -1040,10 +1040,9 @@ export default function App() {
                             className={`pieceTag ${isPieceUnavailable(p) ? "pieceTagLaundry" : ""}`}
                             key={i}
                           >
-                            <strong>{p.name}</strong>
+                            <div className="pieceTagHeader">
+                              <span className="pieceCategoryBadge">{p.category}</span>
 
-                            <small>
-                              {p.category}
                               <span className="savedColors">
                                 {p.colors?.map((color, i) => (
                                   <span
@@ -1053,7 +1052,9 @@ export default function App() {
                                   />
                                 ))}
                               </span>
-                            </small>
+                            </div>
+
+                            <strong>{p.name}</strong>
                           </div>
                         ))}
                       </div>

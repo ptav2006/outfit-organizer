@@ -411,35 +411,28 @@ button {
 
 .pieceTag {
   position: relative;
-  padding: 14px 16px;
+
+  padding: 16px 18px;
   border-radius: 18px;
+
   background: #f8fafc;
   border: 1px solid #e2e8f0;
 
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  min-width: 0;
 }
 
 .pieceTag strong {
   color: #0f172a;
   font-size: 16px;
-  min-width: 0;
+  line-height: 1.35;
+  font-weight: 700;
+
+  text-align: left;
   overflow-wrap: anywhere;
-}
-
-.pieceTag small {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-
-  font-size: 14px;
-  color: #64748b;
-
-  min-width: 0;
-  white-space: nowrap;
 }
 
 .delete {
@@ -1787,14 +1780,9 @@ body {
   backdrop-filter: blur(8px);
 }
 
-.pieceTag {
-  position: relative;
-}
-
 .pieceTagLaundry {
   background: #f8fafc;
   border-color: #e2e8f0;
-  padding-right: 48px;
 }
 
 .pieceTagLaundry::before {
@@ -1809,6 +1797,31 @@ body {
   background: #fed7aa;
 }
 
+.pieceTagHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.pieceCategoryBadge {
+  width: fit-content;
+  max-width: 70%;
+
+  padding: 0;
+  border-radius: 0;
+
+  background: transparent;
+  color: #64748b;
+
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 
 
