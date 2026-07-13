@@ -145,21 +145,15 @@ h1 {
   scrollbar-gutter: stable;
 }
 
-.panel::-webkit-scrollbar {
-  width: 0px;
-}
-
-.panel:hover {
-  scrollbar-width: thin;
+.panel {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .panel::-webkit-scrollbar {
-  width: 6px;
-}
-
-.panel::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 .form-title {
@@ -314,21 +308,15 @@ button {
   scrollbar-width: none;
 }
 
+.cards {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
 .cards::-webkit-scrollbar {
+  width: 0;
+  height: 0;
   display: none;
-}
-
-.cards:hover {
-  scrollbar-width: thin;
-}
-
-.cards::-webkit-scrollbar {
-  width: 0px;
-}
-
-.cards::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
 }
 
 .cardsWrapper {
