@@ -93,6 +93,7 @@ export default function App() {
   const [draggedId, setDraggedId] = useState(null);
   const [closedSuggestions, setClosedSuggestions] = useState([]);
   const [closetFilter, setClosetFilter] = useState("Todos");
+  const [activeTab, setActiveTab] = useState("looks");
   const [openPiecesOutfits, setOpenPiecesOutfits] = useState([]);
   const [showCloset, setShowCloset] = useState(false);
   const [laundryMode, setLaundryMode] = useState(false);
@@ -798,6 +799,29 @@ export default function App() {
     ).length;
   }
 
+  function handleTabChange(tab) {
+    setActiveTab(tab);
+
+    if (tab !== "create") {
+      setShowCloset(false);
+    }
+
+    if (tab === "closet") {
+      setClosetFilter("Todos");
+    }
+
+    if (tab === "laundry") {
+      setClosetFilter("Para lavar");
+    }
+  }
+
+  const showOutfitsArea = activeTab === "looks";
+
+  const showClosetArea =
+    activeTab === "closet" ||
+    activeTab === "laundry" ||
+    (activeTab === "create" && showCloset);
+
   
 
   return (
@@ -818,211 +842,265 @@ export default function App() {
           </div>
         </header>
 
-        <main className="layout">
-          <section className="panel">
-            <div className="sectionHeader formSectionHeader">
-              <div className="sectionMiniRow">
-                <span className="sectionNumber">01</span>
-                <span className="sectionKicker">LOOK BUILDER</span>
+        <nav className="appTabs">
+          <button
+            type="button"
+            className={`appTab ${activeTab === "looks" ? "active" : ""}`}
+            onClick={() => handleTabChange("looks")}
+          >
+            <span>Looks</span>
+          </button>
+
+          <button
+            type="button"
+            className={`appTab ${activeTab === "create" ? "active" : ""}`}
+            onClick={() => handleTabChange("create")}
+          >
+            <span>Criar look</span>
+          </button>
+
+          <button
+            type="button"
+            className={`appTab ${activeTab === "closet" ? "active" : ""}`}
+            onClick={() => handleTabChange("closet")}
+          >
+            <span>Closet</span>
+          </button>
+
+          <button
+            type="button"
+            className={`appTab ${activeTab === "laundry" ? "active" : ""}`}
+            onClick={() => handleTabChange("laundry")}
+          >
+            <span>🧺 Lavandaria</span>
+          </button>
+        </nav>
+
+        <main
+          className={`layout ${
+            activeTab !== "create"
+              ? "singleColumnLayout"
+              : showCloset
+              ? ""
+              : "formOnlyLayout"
+          }`}
+        >
+          {activeTab === "create" && (
+            <section className="panel">
+              <div className="sectionHeader formSectionHeader">
+                <div className="sectionMiniRow">
+                  <span className="sectionNumber">01</span>
+                  <span className="sectionKicker">LOOK BUILDER</span>
+                </div>
+
+                <h2>Criar look</h2>
+
+                <p>Define o outfit, adiciona peças e guarda a combinação.</p>
               </div>
 
-              <h2>Criar look</h2>
+              <button
+                type="button"
+                className={`builderClosetBtn ${showCloset ? "active" : ""}`}
+                onClick={() => setShowCloset((prev) => !prev)}
+              >
+                {showCloset ? "Fechar closet" : "Abrir closet para escolher peças"}
+              </button>
 
-              <p>Define o outfit, adiciona peças e guarda a combinação.</p>
-            </div>
-
-            <form onSubmit={addOutfit}>
-              <input
-                placeholder="Nome do outfit"
-                value={form.title}
-                onChange={e => setForm({ ...form, title: e.target.value })}
-              />
-
-              <div className="grid2">
-                <CustomSelect
-                  value={form.style}
-                  options={outfitStyles}
-                  onChange={(value) => setForm({ ...form, style: value })}
+              <form onSubmit={addOutfit}>
+                <input
+                  placeholder="Nome do outfit"
+                  value={form.title}
+                  onChange={e => setForm({ ...form, title: e.target.value })}
                 />
 
-                <CustomSelect
-                  value={form.function}
-                  options={outfitFunctions}
-                  onChange={(value) => setForm({ ...form, function: value })}
+                <div className="grid2">
+                  <CustomSelect
+                    value={form.style}
+                    options={outfitStyles}
+                    onChange={(value) => setForm({ ...form, style: value })}
+                  />
+
+                  <CustomSelect
+                    value={form.function}
+                    options={outfitFunctions}
+                    onChange={(value) => setForm({ ...form, function: value })}
+                  />
+                </div>
+
+              {form.function === "Outro" && (
+                <input
+                  placeholder="Escreve para que é o outfit"
+                  value={form.customFunction}
+                  onChange={e => setForm({ ...form, customFunction: e.target.value })}
                 />
-              </div>
+              )}
 
-            {form.function === "Outro" && (
-              <input
-                placeholder="Escreve para que é o outfit"
-                value={form.customFunction}
-                onChange={e => setForm({ ...form, customFunction: e.target.value })}
-              />
-            )}
+                <label className={`upload ${form.image ? "uploadSelected" : ""}`}>
+                  <input type="file" accept="image/*" onChange={handleImage} />
 
-              <label className={`upload ${form.image ? "uploadSelected" : ""}`}>
-                <input type="file" accept="image/*" onChange={handleImage} />
-
-                <span className="uploadIcon">
-                  <span className="uploadIconInner">
-                    {form.image ? "✓" : "📷"}
+                  <span className="uploadIcon">
+                    <span className="uploadIconInner">
+                      {form.image ? "✓" : "📷"}
+                    </span>
                   </span>
-                </span>
 
-                <span className="uploadText">
-                  <strong>
-                    {form.image ? "Fotografia adicionada" : "Adicionar fotografia"}
-                  </strong>
+                  <span className="uploadText">
+                    <strong>
+                      {form.image ? "Fotografia adicionada" : "Adicionar fotografia"}
+                    </strong>
 
-                  <small>
-                    {form.image ? "Clica para trocar a imagem" : "Escolhe uma imagem para este look"}
-                  </small>
-                </span>
-              </label>
+                    <small>
+                      {form.image ? "Clica para trocar a imagem" : "Escolhe uma imagem para este look"}
+                    </small>
+                  </span>
+                </label>
 
-              {form.image && <img className="preview" src={form.image} alt="Preview" />}
+                {form.image && <img className="preview" src={form.image} alt="Preview" />}
 
-              <h3>Composição do look</h3>
+                <h3>Composição do look</h3>
 
-              {form.pieces.map((piece, index) => (
-                <div className="piece" key={index}>
-                  <div className="pieceNameArea">
-                    <input
-                      placeholder="Nome da peça"
-                      value={piece.name}
-                      onChange={e => {
-                        updatePiece(index, "name", e.target.value);
-                        setClosedSuggestions(closedSuggestions.filter(i => i !== index));
-                      }}
-                    />
-
-                    {piece.name.trim() &&
-                      filteredCloset.filter(item =>
-                        item.name.toLowerCase().includes(piece.name.toLowerCase())
-                      ).length > 0 &&
-                      !closedSuggestions.includes(index) && (
-                      <div className="suggestionsBox">
-                        {filteredCloset
-                          .filter(item =>
-                            item.name.toLowerCase().includes(piece.name.toLowerCase())
-                          )
-                          .slice(0, 5)
-                          .map(item => (
-                            <button
-                              type="button"
-                              className="suggestionItem"
-                              key={item.id}
-                              onClick={() => applyClosetSuggestion(index, item)}
-                            >
-                              <div className="suggestionColors">
-                                {(item.colors || [item.tempColor || "#ffffff"]).map((color, i) => (
-                                  <span
-                                    key={i}
-                                    className="suggestionColor"
-                                    style={{ backgroundColor: color }}
-                                  />
-                                ))}
-                              </div>
-
-                              <span>{item.name}</span>
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                  <div className="pieceControls">
-                    <div className="controlGroup">
-                      <span className="controlLabel">Categoria</span>
-
-                      <CustomSelect
-                        value={piece.category}
-                        options={categories}
-                        onChange={(value) => updatePiece(index, "category", value)}
+                {form.pieces.map((piece, index) => (
+                  <div className="piece" key={index}>
+                    <div className="pieceNameArea">
+                      <input
+                        placeholder="Nome da peça"
+                        value={piece.name}
+                        onChange={e => {
+                          updatePiece(index, "name", e.target.value);
+                          setClosedSuggestions(closedSuggestions.filter(i => i !== index));
+                        }}
                       />
-                    </div>
 
-                    <div className="controlGroup colorGroup">
-                      <span className="controlLabel">Cor</span>
+                      {piece.name.trim() &&
+                        filteredCloset.filter(item =>
+                          item.name.toLowerCase().includes(piece.name.toLowerCase())
+                        ).length > 0 &&
+                        !closedSuggestions.includes(index) && (
+                        <div className="suggestionsBox">
+                          {filteredCloset
+                            .filter(item =>
+                              item.name.toLowerCase().includes(piece.name.toLowerCase())
+                            )
+                            .slice(0, 5)
+                            .map(item => (
+                              <button
+                                type="button"
+                                className="suggestionItem"
+                                key={item.id}
+                                onClick={() => applyClosetSuggestion(index, item)}
+                              >
+                                <div className="suggestionColors">
+                                  {(item.colors || [item.tempColor || "#ffffff"]).map((color, i) => (
+                                    <span
+                                      key={i}
+                                      className="suggestionColor"
+                                      style={{ backgroundColor: color }}
+                                    />
+                                  ))}
+                                </div>
 
-                      <div className="colorPickerRow">
-                        <input
-                          type="color"
-                          value={piece.tempColor || "#ffffff"}
-                          onChange={e => updatePiece(index, "tempColor", e.target.value)}
-                          className="colorPicker"
+                                <span>{item.name}</span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                    <div className="pieceControls">
+                      <div className="controlGroup">
+                        <span className="controlLabel">Categoria</span>
+
+                        <CustomSelect
+                          value={piece.category}
+                          options={categories}
+                          onChange={(value) => updatePiece(index, "category", value)}
                         />
+                      </div>
 
-                        <button
-                          type="button"
-                          className="addColorBtn"
-                          onClick={() => addColorToPiece(index)}
-                        >
-                          +
-                        </button>
+                      <div className="controlGroup colorGroup">
+                        <span className="controlLabel">Cor</span>
+
+                        <div className="colorPickerRow">
+                          <input
+                            type="color"
+                            value={piece.tempColor || "#ffffff"}
+                            onChange={e => updatePiece(index, "tempColor", e.target.value)}
+                            className="colorPicker"
+                          />
+
+                          <button
+                            type="button"
+                            className="addColorBtn"
+                            onClick={() => addColorToPiece(index)}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="controlGroup">
+                        <span className="controlLabel">Foto</span>
+
+                        <label className="pieceImageUpload">
+                          + Foto
+
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handlePieceImage(e, index)}
+                          />
+                        </label>
                       </div>
                     </div>
-
-                    <div className="controlGroup">
-                      <span className="controlLabel">Foto</span>
-
-                      <label className="pieceImageUpload">
-                        + Foto
-
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handlePieceImage(e, index)}
-                        />
-                      </label>
-                    </div>
+                    {form.pieces.length > 1 && (
+                      <button
+                        type="button"
+                        className="deleteSmall"
+                        onClick={() => removePiece(index)}
+                      >
+                        Remover peça
+                      </button>
+                    )}
                   </div>
-                  {form.pieces.length > 1 && (
-                    <button
-                      type="button"
-                      className="deleteSmall"
-                      onClick={() => removePiece(index)}
-                    >
-                      Remover peça
-                    </button>
-                  )}
+                ))}
+
+                <button type="button" className="secondary" onClick={addPiece}>
+                  + Adicionar peça
+                </button>
+
+                <button className={`primary ${saveStatus ? "savedBtn" : ""}`}>
+                  {saveStatus === "saved"
+                  ? "Guardado ✅"
+                  : saveStatus === "updated"
+                  ? "Atualizado ✅"
+                  : editingId
+                  ? "Atualizar look"
+                  : "Guardar look"}               
+                </button>
+              </form>
+            </section>
+          )}
+
+          {(showOutfitsArea || showClosetArea) && (
+            <section className="content">
+              {showOutfitsArea && (
+                <div className="toolbar">
+                  <input
+                    placeholder="Pesquisar por peça, cor, estilo..."
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                  />
+
+                  <CustomSelect
+                    value={filter}
+                    options={["Todos", "Favoritos", ...outfitStyles]}
+                    onChange={(value) => setFilter(value)}
+                  />
                 </div>
-              ))}
+              )}
 
-              <button type="button" className="secondary" onClick={addPiece}>
-                + Adicionar peça
-              </button>
-
-              <button className={`primary ${saveStatus ? "savedBtn" : ""}`}>
-                 {saveStatus === "saved"
-                 ? "Guardado ✅"
-                 : saveStatus === "updated"
-                 ? "Atualizado ✅"
-                 : editingId
-                 ? "Atualizar look"
-                 : "Guardar look"}               
-              </button>
-            </form>
-          </section>
-
-          <section className="content">
-            <div className="toolbar">
-              <input
-                placeholder="Pesquisar por peça, cor, estilo..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-              />
-
-              <CustomSelect
-                value={filter}
-                options={["Todos", "Favoritos", ...outfitStyles]}
-                onChange={(value) => setFilter(value)}
-              />
-            </div>
-
-            <div className="closetToggle">
-              {showCloset && (
-                <>
+              {showClosetArea && (
+                <div className="closetToggle closetTabActions">
                   <button
                     type="button"
                     className={`laundryButtonInline ${laundryMode ? "active" : ""}`}
@@ -1034,385 +1112,382 @@ export default function App() {
                   {laundryMode && (
                     <span className="laundryText">Modo Lavandaria Ativo</span>
                   )}
-                </>
+                </div>
               )}
 
-              <button type="button" onClick={() => setShowCloset(!showCloset)}>
-                {showCloset ? "Fechar closet" : "Abrir closet"}
-              </button>
-            </div>
+              {showClosetArea && (
+                <div className="closetBox">
+                  <div className="closetHeader">
+                    <div className="sectionHeader closetSectionHeader">
+                      <div className="sectionMiniRow">
+                        <span className="sectionNumber">02</span>
+                        <span className="sectionKicker">CLOSET</span>
+                      </div>
 
-            {showCloset && (
-              <div className="closetBox">
-                <div className="closetHeader">
-                  <div className="sectionHeader closetSectionHeader">
-                    <div className="sectionMiniRow">
-                      <span className="sectionNumber">02</span>
-                      <span className="sectionKicker">CLOSET</span>
+                      <h2>Armário pessoal</h2>
+
+                      <p>Consulta, filtra e reutiliza as tuas peças.</p>
                     </div>
 
-                    <h2>Armário pessoal</h2>
+                    <div className="closetHeaderActions">
+                      <button
+                        type="button"
+                        className="addClosetBtn"
+                        onClick={() => setShowAddClosetItem((prev) => !prev)}
+                      >
+                        + Nova peça
+                      </button>
 
-                    <p>Consulta, filtra e reutiliza as tuas peças.</p>
+                      <span className="closetCount">
+                        {filteredCloset.length} peças
+
+                        {laundryClosetCount > 0 && (
+                          <small>🧺 {laundryClosetCount} para lavar</small>
+                        )}
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="closetHeaderActions">
-                    <button
-                      type="button"
-                      className="addClosetBtn"
-                      onClick={() => setShowAddClosetItem((prev) => !prev)}
-                    >
-                      + Nova peça
-                    </button>
-
-                    <span className="closetCount">
-                      {filteredCloset.length} peças
-
-                      {laundryClosetCount > 0 && (
-                        <small>🧺 {laundryClosetCount} para lavar</small>
-                      )}
-                    </span>
-                  </div>
-                </div>
-
-                {showAddClosetItem && (
-                  <div className="addClosetForm">
-                    <input
-                      type="text"
-                      placeholder="Nome da peça"
-                      value={newClosetItem.name}
-                      onChange={(e) =>
-                        setNewClosetItem((prev) => ({
-                          ...prev,
-                          name: e.target.value,
-                        }))
-                      }
-                    />
-
-                    <CustomSelect
-                      value={newClosetItem.category}
-                      options={categories}
-                      onChange={(value) =>
-                        setNewClosetItem((prev) => ({
-                          ...prev,
-                          category: value,
-                        }))
-                      }
-                    />
-
-                    <label className="closetUpload">
-                      {newClosetItem.image ? "Imagem escolhida ✅" : "Adicionar imagem"}
+                  {showAddClosetItem && (
+                    <div className="addClosetForm">
                       <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleClosetImage}
-                      />
-                    </label>
-
-                    {newClosetItem.image && (
-                      <img
-                        src={newClosetItem.image}
-                        alt="Preview"
-                        className="closetPreview"
-                      />
-                    )}
-
-                    <div className="closetColorPicker">
-                      <input
-                        type="color"
-                        value={newClosetItem.tempColor}
+                        type="text"
+                        placeholder="Nome da peça"
+                        value={newClosetItem.name}
                         onChange={(e) =>
                           setNewClosetItem((prev) => ({
                             ...prev,
-                            tempColor: e.target.value,
+                            name: e.target.value,
                           }))
                         }
                       />
 
-                      <button
-                        type="button"
-                        onClick={() =>
+                      <CustomSelect
+                        value={newClosetItem.category}
+                        options={categories}
+                        onChange={(value) =>
                           setNewClosetItem((prev) => ({
                             ...prev,
-                            colors: [...prev.colors, prev.tempColor],
+                            category: value,
                           }))
                         }
-                      >
-                        Adicionar cor
-                      </button>
-                    </div>
+                      />
 
-                    <div className="closetSelectedColors">
-                      {newClosetItem.colors.map((color, index) => (
-                        <span
-                          key={`${color}-${index}`}
-                          className="closetColorDot"
-                          style={{ backgroundColor: color }}
+                      <label className="closetUpload">
+                        {newClosetItem.image ? "Imagem escolhida ✅" : "Adicionar imagem"}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleClosetImage}
                         />
-                      ))}
-                    </div>
+                      </label>
 
-                    <button
-                      type="button"
-                      className="saveClosetItemBtn"
-                      onClick={addManualClosetItem}
-                    >
-                      Guardar peça
-                    </button>
-                  </div>
-                )}
-
-                <div className="closetFilters">
-                  {closetFilterOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      className={`filterChip ${closetFilter === option.value ? "active" : ""} ${
-                        option.value === "Para lavar" ? "laundryFilterChip" : ""
-                      }`}
-                      onClick={() => setClosetFilter(option.value)}
-                    >
-                      <span className="filterChipText">
-                        {option.icon && (
-                          <span className="filterChipIcon">{option.icon}</span>
-                        )}
-
-                        {option.label}
-                      </span>
-
-                      {option.count > 0 && (
-                        <span className="filterChipCount">{option.count}</span>
+                      {newClosetItem.image && (
+                        <img
+                          src={newClosetItem.image}
+                          alt="Preview"
+                          className="closetPreview"
+                        />
                       )}
 
-                      {option.showLaundryBadge && option.laundryCount > 0 && (
-                        <span className="filterChipLaundry">
-                          🧺 {option.laundryCount}
-                        </span>
-                      )}
-                    </button>
-                  ))}
-                </div>
-
-                {filteredCloset.length === 0 ? (
-                  <p className="closetEmpty">
-                    {closetFilter === "Para lavar"
-                      ? "Não tens peças para lavar."
-                      : "As peças aparecem aqui quando guardares outfits."}
-                  </p>
-                ) : (
-                  <div className="closetGrid">
-                    {filteredCloset.map((item) => (
-                      <div 
-                        className={`closetItem ${item.unavailable ? "unavailable" : ""}`}
-                        key={item.closetKey || item.id}
-                        onClick={() => {
-                          handleClosetItemClick(item);
-                        }}
-                      >                        
-                        <div className="closetSwatches">
-                          {(item.colors || [item.tempColor || "#ffffff"]).map((color, i) => (
-                            <span
-                              key={i}
-                              className="closetColor"
-                              style={{ backgroundColor: color }}
-                            />
-                          ))}
-
-                        {item.unavailable && (
-                          <span className="laundryBadge">🧺</span>
-                        )}
-
-                        </div>
-          
-                        <div className="closetInfo">
-                          <strong>{item.name}</strong>
-                          <p>{item.category}</p>
-                        </div>
-
-                        {item.image && (
-                          <span className="closetPhotoIcon" title="Tem fotografia">
-                            📷
-                          </span>
-                        )}
+                      <div className="closetColorPicker">
+                        <input
+                          type="color"
+                          value={newClosetItem.tempColor}
+                          onChange={(e) =>
+                            setNewClosetItem((prev) => ({
+                              ...prev,
+                              tempColor: e.target.value,
+                            }))
+                          }
+                        />
 
                         <button
                           type="button"
-                          className={`closetFavoriteBtn ${item.favorite ? "active" : ""}`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleClosetFavorite(item);
-                          }}
+                          onClick={() =>
+                            setNewClosetItem((prev) => ({
+                              ...prev,
+                              colors: [...prev.colors, prev.tempColor],
+                            }))
+                          }
                         >
-                          {item.favorite ? "❤️" : "🤍"}
+                          Adicionar cor
                         </button>
-        
-                        <div className="closetActions">
-                          <button 
-                            type="button" 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              editClosetItem(item)
-                            }}
-                          >
-                            ✏️
-                          </button>
-                          <button 
-                            type="button" 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteClosetItem(item)
-                            }}
-                          >
-                            🗑️
-                          </button>
-                        </div>
                       </div>
+
+                      <div className="closetSelectedColors">
+                        {newClosetItem.colors.map((color, index) => (
+                          <span
+                            key={`${color}-${index}`}
+                            className="closetColorDot"
+                            style={{ backgroundColor: color }}
+                          />
+                        ))}
+                      </div>
+
+                      <button
+                        type="button"
+                        className="saveClosetItemBtn"
+                        onClick={addManualClosetItem}
+                      >
+                        Guardar peça
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="closetFilters">
+                    {closetFilterOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        className={`filterChip ${closetFilter === option.value ? "active" : ""} ${
+                          option.value === "Para lavar" ? "laundryFilterChip" : ""
+                        }`}
+                        onClick={() => setClosetFilter(option.value)}
+                      >
+                        <span className="filterChipText">
+                          {option.icon && (
+                            <span className="filterChipIcon">{option.icon}</span>
+                          )}
+
+                          {option.label}
+                        </span>
+
+                        {option.count > 0 && (
+                          <span className="filterChipCount">{option.count}</span>
+                        )}
+
+                        {option.showLaundryBadge && option.laundryCount > 0 && (
+                          <span className="filterChipLaundry">
+                            🧺 {option.laundryCount}
+                          </span>
+                        )}
+                      </button>
                     ))}
                   </div>
-                )}
-              </div>
-            )}
 
+                  {filteredCloset.length === 0 ? (
+                    <p className="closetEmpty">
+                      {closetFilter === "Para lavar"
+                        ? "Não tens peças para lavar."
+                        : "As peças aparecem aqui quando guardares outfits."}
+                    </p>
+                  ) : (
+                    <div className="closetGrid">
+                      {filteredCloset.map((item) => (
+                        <div 
+                          className={`closetItem ${item.unavailable ? "unavailable" : ""}`}
+                          key={item.closetKey || item.id}
+                          onClick={() => {
+                            handleClosetItemClick(item);
+                          }}
+                        >                        
+                          <div className="closetSwatches">
+                            {(item.colors || [item.tempColor || "#ffffff"]).map((color, i) => (
+                              <span
+                                key={i}
+                                className="closetColor"
+                                style={{ backgroundColor: color }}
+                              />
+                            ))}
 
-            <div className="cardsWrapper">
-              <div className="cards">
-                {filteredOutfits.length === 0 && (
-                  <div className="empty">
-                    <div className="emptyIcon">👕</div>
-                    <h2 className="ainda-title">Ainda não tens outfits guardados</h2>
-                    <p>Cria o teu primeiro conjunto</p>
-                  </div>
-                )}
+                          {item.unavailable && (
+                            <span className="laundryBadge">🧺</span>
+                          )}
 
-                {filteredOutfits.map(outfit => (
-                  <article 
-                    className={`card ${deletingId === outfit.id ? "deleting" : ""} ${draggedId === outfit.id ? "dragged" : ""}`}
-                    key={outfit.id}
-                    draggable
-                    onDragStart={() => setDraggedId(outfit.id)}
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={() => moveOutfit(outfit.id)}
-                    onDragEnd={() => setDraggedId(null)}  
-                  >
-                    <button
-                      className={`favoriteBtn ${outfit.favorite ? "active" : ""}`}
-                      onClick={() => toggleFavorite(outfit.id)}
-                    >
-                      {outfit.favorite ? "❤️" : "🤍"}
-                    </button>
-                    {outfit.image ? (
-                      <img src={outfit.image} alt={outfit.title} />
-                    ) : (
-                      <div className="placeholder outfitPlaceholder">
-                        <div className="outfitPlaceholderIcon">📷</div>
+                          </div>
+            
+                          <div className="closetInfo">
+                            <strong>{item.name}</strong>
+                            <p>{item.category}</p>
+                          </div>
 
-                        <div className="outfitPlaceholderText">
-                          <strong>Sem fotografia</strong>
-                          <span>Adiciona uma imagem a este look</span>
+                          {item.image && (
+                            <span className="closetPhotoIcon" title="Tem fotografia">
+                              📷
+                            </span>
+                          )}
+
+                          <button
+                            type="button"
+                            className={`closetFavoriteBtn ${item.favorite ? "active" : ""}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleClosetFavorite(item);
+                            }}
+                          >
+                            {item.favorite ? "❤️" : "🤍"}
+                          </button>
+          
+                          <div className="closetActions">
+                            <button 
+                              type="button" 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                editClosetItem(item)
+                              }}
+                            >
+                              ✏️
+                            </button>
+                            <button 
+                              type="button" 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteClosetItem(item)
+                              }}
+                            >
+                              🗑️
+                            </button>
+                          </div>
                         </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {showOutfitsArea && (
+                <div className="cardsWrapper">
+                  <div className="cards">
+                    {filteredOutfits.length === 0 && (
+                      <div className="empty">
+                        <div className="emptyIcon">👕</div>
+                        <h2 className="ainda-title">Ainda não tens outfits guardados</h2>
+                        <p>Cria o teu primeiro conjunto</p>
                       </div>
                     )}
 
-                    <div className="cardBody">
-                      <div className="cardTop">
-                        <div>
-                          <h2>{outfit.title}</h2>
-                          <p>{outfit.function === "Outro" ? outfit.customFunction : outfit.function}</p>
-                        </div>
-
-                        <span>{outfit.style}</span>
-                      </div>
-
-                      {outfit.lastUsedAt && (
-                        <div className="lastUsedBadge">
-                          <span>👕</span>
-                          <strong>{formatLastUsed(outfit.lastUsedAt)}</strong>
-                        </div>
-                      )}
-
-                      {getUnavailablePiecesCount(outfit) > 0 && (
-                        <div className="outfitLaundryBar">
-                          <span>🧺</span>
-                          <strong>
-                            {getUnavailablePiecesCount(outfit) === 1
-                              ? "1 peça deste outfit está para lavar"
-                              : `${getUnavailablePiecesCount(outfit)} peças deste outfit estão para lavar`}
-                          </strong>
-                        </div>
-                      )}
-
-                      <div className="piecesToggleArea">
+                    {filteredOutfits.map(outfit => (
+                      <article 
+                        className={`card ${deletingId === outfit.id ? "deleting" : ""} ${draggedId === outfit.id ? "dragged" : ""}`}
+                        key={outfit.id}
+                        draggable
+                        onDragStart={() => setDraggedId(outfit.id)}
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={() => moveOutfit(outfit.id)}
+                        onDragEnd={() => setDraggedId(null)}  
+                      >
                         <button
-                          type="button"
-                          className={`piecesToggle ${isOutfitPiecesOpen(outfit.id) ? "open" : ""}`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleOutfitPieces(outfit.id);
-                          }}
+                          className={`favoriteBtn ${outfit.favorite ? "active" : ""}`}
+                          onClick={() => toggleFavorite(outfit.id)}
                         >
-                          <span>
-                            {isOutfitPiecesOpen(outfit.id)
-                              ? "Esconder peças"
-                              : `Ver peças (${outfit.pieces.length})`}
-                          </span>
-
-                          <span className="piecesToggleArrow">⌄</span>
+                          {outfit.favorite ? "❤️" : "🤍"}
                         </button>
-                      </div>
+                        {outfit.image ? (
+                          <img src={outfit.image} alt={outfit.title} />
+                        ) : (
+                          <div className="placeholder outfitPlaceholder">
+                            <div className="outfitPlaceholderIcon">📷</div>
 
-                      {isOutfitPiecesOpen(outfit.id) && (
-                        <div className="piecesList piecesListExpanded">
-                          {outfit.pieces.map((p, i) => (
-                            <div
-                              className={`pieceTag ${isPieceUnavailable(p) ? "pieceTagLaundry" : ""}`}
-                              key={i}
-                            >
-                              <div className="pieceTagHeader">
-                                <span className="pieceCategoryBadge">{p.category}</span>
-
-                                <span className="savedColors">
-                                  {p.colors?.map((color, i) => (
-                                    <span
-                                      key={i}
-                                      className="savedColorDot"
-                                      style={{ backgroundColor: color }}
-                                    />
-                                  ))}
-                                </span>
-                              </div>
-
-                              <strong>{p.name}</strong>
+                            <div className="outfitPlaceholderText">
+                              <strong>Sem fotografia</strong>
+                              <span>Adiciona uma imagem a este look</span>
                             </div>
-                          ))}
+                          </div>
+                        )}
+
+                        <div className="cardBody">
+                          <div className="cardTop">
+                            <div>
+                              <h2>{outfit.title}</h2>
+                              <p>{outfit.function === "Outro" ? outfit.customFunction : outfit.function}</p>
+                            </div>
+
+                            <span>{outfit.style}</span>
+                          </div>
+
+                          {outfit.lastUsedAt && (
+                            <div className="lastUsedBadge">
+                              <span>👕</span>
+                              <strong>{formatLastUsed(outfit.lastUsedAt)}</strong>
+                            </div>
+                          )}
+
+                          {getUnavailablePiecesCount(outfit) > 0 && (
+                            <div className="outfitLaundryBar">
+                              <span>🧺</span>
+                              <strong>
+                                {getUnavailablePiecesCount(outfit) === 1
+                                  ? "1 peça deste outfit está para lavar"
+                                  : `${getUnavailablePiecesCount(outfit)} peças deste outfit estão para lavar`}
+                              </strong>
+                            </div>
+                          )}
+
+                          <div className="piecesToggleArea">
+                            <button
+                              type="button"
+                              className={`piecesToggle ${isOutfitPiecesOpen(outfit.id) ? "open" : ""}`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleOutfitPieces(outfit.id);
+                              }}
+                            >
+                              <span>
+                                {isOutfitPiecesOpen(outfit.id)
+                                  ? "Esconder peças"
+                                  : `Ver peças (${outfit.pieces.length})`}
+                              </span>
+
+                              <span className="piecesToggleArrow">⌄</span>
+                            </button>
+                          </div>
+
+                          {isOutfitPiecesOpen(outfit.id) && (
+                            <div className="piecesList piecesListExpanded">
+                              {outfit.pieces.map((p, i) => (
+                                <div
+                                  className={`pieceTag ${isPieceUnavailable(p) ? "pieceTagLaundry" : ""}`}
+                                  key={i}
+                                >
+                                  <div className="pieceTagHeader">
+                                    <span className="pieceCategoryBadge">{p.category}</span>
+
+                                    <span className="savedColors">
+                                      {p.colors?.map((color, i) => (
+                                        <span
+                                          key={i}
+                                          className="savedColorDot"
+                                          style={{ backgroundColor: color }}
+                                        />
+                                      ))}
+                                    </span>
+                                  </div>
+
+                                  <strong>{p.name}</strong>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          <div className="actions">
+                            <button 
+                              className="useToday"
+                              onClick={() => openUseToday(outfit)}
+                            >
+                              👕 Usar hoje
+                            </button>
+
+                            <button 
+                              className="edit"
+                              onClick={() => editOutfit(outfit)}
+                            >
+                              ✏️ Editar
+                            </button>
+
+                            <button 
+                              className="delete"
+                              onClick={() => deleteOutfit(outfit.id)}
+                            >
+                              🗑️ Apagar
+                            </button>
+                          </div>
                         </div>
-                      )}
-                      <div className="actions">
-                        <button 
-                          className="useToday"
-                          onClick={() => openUseToday(outfit)}
-                        >
-                          👕 Usar hoje
-                        </button>
-
-                        <button 
-                          className="edit"
-                          onClick={() => editOutfit(outfit)}
-                        >
-                          ✏️ Editar
-                        </button>
-
-                        <button 
-                          className="delete"
-                          onClick={() => deleteOutfit(outfit.id)}
-                        >
-                          🗑️ Apagar
-                        </button>
-                      </div>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </div>
-          </section>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </section>
+          )}
         </main>
 
         {editingClosetItem && (

@@ -3235,6 +3235,212 @@ body {
   white-space: nowrap;
 }
 
+.appTabs {
+  max-width: 1300px;
+  margin: -8px auto 28px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+
+  flex-wrap: wrap;
+}
+
+.appTab {
+  padding: 12px 18px;
+
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.72);
+  color: #475569;
+
+  font-size: 14px;
+  font-weight: 850;
+
+  cursor: pointer;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    0 10px 24px rgba(15, 23, 42, 0.05);
+
+  backdrop-filter: blur(12px);
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.appTab:hover {
+  transform: translateY(-2px);
+  background: #ffffff;
+  color: #0f172a;
+}
+
+.appTab.active {
+  background: #111827;
+  color: white;
+  border-color: transparent;
+
+  box-shadow:
+    0 14px 30px rgba(15, 23, 42, 0.22),
+    inset 0 1px 0 rgba(255,255,255,0.12);
+}
+
+.appTab span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Layout das tabs */
+
+.singleColumnLayout {
+  grid-template-columns: 1fr;
+}
+
+.singleColumnLayout .content {
+  min-width: 0;
+}
+
+.formOnlyLayout {
+  grid-template-columns: minmax(0, 540px);
+  justify-content: center;
+}
+
+.formOnlyLayout .panel {
+  width: 100%;
+}
+
+.builderClosetBtn {
+  width: 100%;
+
+  margin: 0 0 20px;
+  padding: 14px 18px;
+
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  border-radius: 20px;
+
+  background: linear-gradient(135deg, #eff6ff, #ffffff);
+  color: #1d4ed8;
+
+  font-size: 14px;
+  font-weight: 900;
+
+  cursor: pointer;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    0 12px 26px rgba(37, 99, 235, 0.08);
+}
+
+.builderClosetBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(37, 99, 235, 0.14);
+}
+
+.builderClosetBtn.active {
+  background: #111827;
+  color: white;
+  border-color: transparent;
+}
+
+.closetTabActions {
+  justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+  .appTabs {
+    justify-content: flex-start;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+
+    scrollbar-width: none;
+  }
+
+  .appTabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .appTab {
+    white-space: nowrap;
+  }
+
+  .formOnlyLayout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.singleColumnLayout .cards {
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  gap: 20px;
+  padding: 28px 18px 40px;
+}
+
+.singleColumnLayout .card > img,
+.singleColumnLayout .card > .placeholder {
+  height: 220px;
+}
+
+.singleColumnLayout .cardBody {
+  padding: 22px;
+}
+
+.singleColumnLayout .cardTop {
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.singleColumnLayout .cardTop h2 {
+  font-size: 24px;
+  line-height: 1.05;
+}
+
+.singleColumnLayout .cardTop p {
+  font-size: 14px;
+}
+
+.singleColumnLayout .cardTop > span {
+  padding: 9px 14px;
+  font-size: 13px;
+}
+
+.singleColumnLayout .piecesToggleArea {
+  margin-top: 16px;
+}
+
+.singleColumnLayout .actions {
+  gap: 8px;
+}
+
+.singleColumnLayout .actions button {
+  height: 46px;
+  font-size: 13px;
+  padding: 10px;
+}
+
+@media (max-width: 1300px) {
+  .singleColumnLayout .cards {
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
+  }
+}
+
+@media (max-width: 950px) {
+  .singleColumnLayout .cards {
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .singleColumnLayout .cards {
+    grid-template-columns: 1fr;
+  }
+}
+
 
 
 
