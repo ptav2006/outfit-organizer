@@ -704,7 +704,16 @@ export default function App() {
 
         <main className="layout">
           <section className="panel">
-            <h2 className="form-title">Criar look</h2>
+            <div className="sectionHeader formSectionHeader">
+              <div className="sectionMiniRow">
+                <span className="sectionNumber">01</span>
+                <span className="sectionKicker">LOOK BUILDER</span>
+              </div>
+
+              <h2>Criar look</h2>
+
+              <p>Define o outfit, adiciona peças e guarda a combinação.</p>
+            </div>
 
             <form onSubmit={addOutfit}>
               <input
@@ -735,9 +744,24 @@ export default function App() {
               />
             )}
 
-              <label className="upload">
-                {form.image ? "Imagem escolhida ✅" : "Adicionar Fotografia"}
+              <label className={`upload ${form.image ? "uploadSelected" : ""}`}>
                 <input type="file" accept="image/*" onChange={handleImage} />
+
+                <span className="uploadIcon">
+                  <span className="uploadIconInner">
+                    {form.image ? "✓" : "📷"}
+                  </span>
+                </span>
+
+                <span className="uploadText">
+                  <strong>
+                    {form.image ? "Fotografia adicionada" : "Adicionar fotografia"}
+                  </strong>
+
+                  <small>
+                    {form.image ? "Clica para trocar a imagem" : "Escolhe uma imagem para este look"}
+                  </small>
+                </span>
               </label>
 
               {form.image && <img className="preview" src={form.image} alt="Preview" />}
@@ -905,11 +929,18 @@ export default function App() {
             {showCloset && (
               <div className="closetBox">
                 <div className="closetHeader">
-                  <div>
-                    <p className="tag">CLOSET</p>
-                    <h2>Armário pessoal</h2>
+                  <div className="sectionHeader closetSectionHeader">
+                    <div className="sectionMiniRow">
+                      <span className="sectionNumber">02</span>
+                      <span className="sectionKicker">CLOSET</span>
                     </div>
 
+                    <h2>Armário pessoal</h2>
+
+                    <p>Consulta, filtra e reutiliza as tuas peças.</p>
+                  </div>
+
+                  <div className="closetHeaderActions">
                     <button
                       type="button"
                       className="addClosetBtn"
@@ -918,7 +949,8 @@ export default function App() {
                       + Nova peça
                     </button>
 
-                  <span>{filteredCloset.length} peças</span>
+                    <span className="closetCount">{filteredCloset.length} peças</span>
+                  </div>
                 </div>
 
                 {showAddClosetItem && (
