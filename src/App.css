@@ -2094,6 +2094,88 @@ body {
   }
 }
 
+.piecesToggleArea {
+  margin-top: 20px;
+}
+
+.piecesToggle {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 11px 12px 11px 16px;
+
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+
+  background: linear-gradient(135deg, #f8fafc, #eef2ff);
+  color: #0f172a;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.85);
+}
+
+.piecesToggle:hover {
+  transform: translateY(-2px);
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.piecesToggleArrow {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+
+  border-radius: 999px;
+
+  background: rgba(15, 23, 42, 0.06);
+  color: #64748b;
+
+  border: 1px solid rgba(15, 23, 42, 0.08);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 16px;
+  line-height: 1;
+  font-weight: 600;
+
+  transition: transform 0.22s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.piecesToggle:hover .piecesToggleArrow {
+  background: rgba(15, 23, 42, 0.1);
+  color: #0f172a;
+}
+
+.piecesToggle.open .piecesToggleArrow {
+  transform: rotate(180deg);
+}
+
+.piecesListExpanded {
+  animation: piecesDropdown 0.22s ease both;
+}
+
+@keyframes piecesDropdown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
 
 

@@ -49,6 +49,7 @@ export default function App() {
   const [draggedId, setDraggedId] = useState(null);
   const [closedSuggestions, setClosedSuggestions] = useState([]);
   const [closetFilter, setClosetFilter] = useState("Todos");
+  const [openPiecesOutfits, setOpenPiecesOutfits] = useState([]);
   const [showCloset, setShowCloset] = useState(false);
   const [laundryMode, setLaundryMode] = useState(false);
   const [previewClosetItem, setPreviewClosetItem] = useState(null);
@@ -339,6 +340,18 @@ export default function App() {
     setClosedSuggestions(
       (outfit.pieces || []).map((_, index) => index)
     );
+  }
+
+  function toggleOutfitPieces(outfitId) {
+    setOpenPiecesOutfits((prev) =>
+      prev.includes(outfitId)
+        ? prev.filter((id) => id !== outfitId)
+        : [...prev, outfitId]
+    );
+  }
+
+  function isOutfitPiecesOpen(outfitId) {
+    return openPiecesOutfits.includes(outfitId);
   }
 
   function toggleFavorite(id) {
@@ -1101,30 +1114,51 @@ export default function App() {
                         </div>
                       )}
 
-                      <div className="piecesList">
-                        {outfit.pieces.map((p, i) => (
-                          <div
-                            className={`pieceTag ${isPieceUnavailable(p) ? "pieceTagLaundry" : ""}`}
-                            key={i}
-                          >
-                            <div className="pieceTagHeader">
-                              <span className="pieceCategoryBadge">{p.category}</span>
+                      <div className="piecesToggleArea">
+                        <button
+                          type="button"
+                          className={`piecesToggle ${isOutfitPiecesOpen(outfit.id) ? "open" : ""}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleOutfitPieces(outfit.id);
+                          }}
+                        >
+                          <span>
+                            {isOutfitPiecesOpen(outfit.id)
+                              ? "Esconder peças"
+                              : `Ver peças (${outfit.pieces.length})`}
+                          </span>
 
-                              <span className="savedColors">
-                                {p.colors?.map((color, i) => (
-                                  <span
-                                    key={i}
-                                    className="savedColorDot"
-                                    style={{ backgroundColor: color }}
-                                  />
-                                ))}
-                              </span>
-                            </div>
-
-                            <strong>{p.name}</strong>
-                          </div>
-                        ))}
+                          <span className="piecesToggleArrow">⌄</span>
+                        </button>
                       </div>
+
+                      {isOutfitPiecesOpen(outfit.id) && (
+                        <div className="piecesList piecesListExpanded">
+                          {outfit.pieces.map((p, i) => (
+                            <div
+                              className={`pieceTag ${isPieceUnavailable(p) ? "pieceTagLaundry" : ""}`}
+                              key={i}
+                            >
+                              <div className="pieceTagHeader">
+                                <span className="pieceCategoryBadge">{p.category}</span>
+
+                                <span className="savedColors">
+                                  {p.colors?.map((color, i) => (
+                                    <span
+                                      key={i}
+                                      className="savedColorDot"
+                                      style={{ backgroundColor: color }}
+                                    />
+                                  ))}
+                                </span>
+                              </div>
+
+                              <strong>{p.name}</strong>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                       <div className="actions">
                         <button 
                           className="edit"
