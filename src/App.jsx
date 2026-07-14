@@ -1158,7 +1158,14 @@ export default function App() {
                     {outfit.image ? (
                       <img src={outfit.image} alt={outfit.title} />
                     ) : (
-                      <div className="placeholder">OUTFIT</div>
+                      <div className="placeholder outfitPlaceholder">
+                        <div className="outfitPlaceholderIcon">📷</div>
+
+                        <div className="outfitPlaceholderText">
+                          <strong>Sem fotografia</strong>
+                          <span>Adiciona uma imagem a este look</span>
+                        </div>
+                      </div>
                     )}
 
                     <div className="cardBody">
