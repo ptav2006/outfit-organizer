@@ -53,6 +53,18 @@ export default function App() {
   const [laundryMode, setLaundryMode] = useState(false);
   const [previewClosetItem, setPreviewClosetItem] = useState(null);
 
+  const [editingClosetItem, setEditingClosetItem] = useState(null);
+
+  const [editClosetForm, setEditClosetForm] = useState({
+    name: "",
+    category: "T-shirt",
+    colors: [],
+    tempColor: "#000000",
+    image: "",
+    favorite: false,
+    unavailable: false,
+  });
+
   const [manualClosetItems, setManualClosetItems] = useState(() => {
     const saved = localStorage.getItem("manual-closet-items");
     return saved ? JSON.parse(saved) : [];
@@ -178,36 +190,91 @@ export default function App() {
   }
 
   function editClosetItem(item) {
-    const newName = prompt("Novo nome da peça:", item.name);
-    if (!newName || !newName.trim()) return;
+    setEditingClosetItem(item);
 
-    const isManualItem = manualClosetItems.some(
-      (manualItem) => manualItem.id === item.id
-    );
+    setEditClosetForm({
+      name: item.name || "",
+      category: item.category || "T-shirt",
+      colors: item.colors?.length ? item.colors : [item.tempColor || "#000000"],
+      tempColor: item.tempColor || item.colors?.[0] || "#000000",
+      image: item.image || "",
+      favorite: item.favorite ?? false,
+      unavailable: item.unavailable ?? false,
+    });
+  }
+
+  function saveEditedClosetItem() {
+    if (!editingClosetItem || !editClosetForm.name.trim()) return;
+
+    const editedItem = {
+      name: editClosetForm.name.trim(),
+      category: editClosetForm.category,
+      colors:
+        editClosetForm.colors.length > 0
+          ? editClosetForm.colors
+          : [editClosetForm.tempColor],
+      tempColor: editClosetForm.tempColor,
+      image: editClosetForm.image,
+      favorite: editClosetForm.favorite,
+      unavailable: editClosetForm.unavailable,
+    };
+
+    const isManualItem = editingClosetItem.source === "manual";
 
     if (isManualItem) {
       setManualClosetItems((prev) =>
         prev.map((manualItem) =>
-          manualItem.id === item.id
-            ? { ...manualItem, name: newName.trim() }
+          manualItem.id === editingClosetItem.id
+            ? { ...manualItem, ...editedItem }
             : manualItem
         )
       );
+    } else {
+      const updatedOutfits = outfits.map((outfit) => ({
+        ...outfit,
+        pieces: (outfit.pieces || []).map((piece) =>
+          piece.name === editingClosetItem.name &&
+          piece.category === editingClosetItem.category
+            ? { ...piece, ...editedItem }
+            : piece
+        ),
+      }));
 
-      return;
+      setOutfits(updatedOutfits);
+      localStorage.setItem("outfits-masculinos", JSON.stringify(updatedOutfits));
     }
 
-    const updatedOutfits = outfits.map((outfit) => ({
-      ...outfit,
-      pieces: (outfit.pieces || []).map((piece) =>
-        piece.name === item.name && piece.category === item.category
-          ? { ...piece, name: newName.trim() }
-          : piece
-      ),
-    }));
+    setEditingClosetItem(null);
+  }
 
-    setOutfits(updatedOutfits);
-    localStorage.setItem("outfits-masculinos", JSON.stringify(updatedOutfits));
+  function handleEditClosetImage(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setEditClosetForm((prev) => ({
+        ...prev,
+        image: reader.result,
+      }));
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  function addEditClosetColor() {
+    setEditClosetForm((prev) => ({
+      ...prev,
+      colors: [...prev.colors, prev.tempColor],
+    }));
+  }
+
+  function removeEditClosetColor(indexToRemove) {
+    setEditClosetForm((prev) => ({
+      ...prev,
+      colors: prev.colors.filter((_, index) => index !== indexToRemove),
+    }));
   }
 
   function deleteClosetItem(item) {
@@ -1080,6 +1147,180 @@ export default function App() {
             </div>
           </section>
         </main>
+
+        {editingClosetItem && (
+          <div
+            className="editClosetOverlay"
+            onClick={() => setEditingClosetItem(null)}
+          >
+            <div
+              className="editClosetModal"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="editClosetHeader">
+                <div>
+                  <span>EDITAR PEÇA</span>
+                  <h2>{editClosetForm.name || "Nova peça"}</h2>
+                </div>
+
+                <button
+                  type="button"
+                  className="editClosetClose"
+                  onClick={() => setEditingClosetItem(null)}
+                >
+                  ×
+                </button>
+              </div>
+
+              <label className="editClosetLabel">Nome da peça</label>
+              <input
+                className="editClosetInput"
+                type="text"
+                value={editClosetForm.name}
+                onChange={(e) =>
+                  setEditClosetForm((prev) => ({
+                    ...prev,
+                    name: e.target.value,
+                  }))
+                }
+              />
+
+              <label className="editClosetLabel">Categoria</label>
+              <select
+                className="editClosetInput"
+                value={editClosetForm.category}
+                onChange={(e) =>
+                  setEditClosetForm((prev) => ({
+                    ...prev,
+                    category: e.target.value,
+                  }))
+                }
+              >
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+
+              <label className="editClosetLabel">Cores</label>
+
+              <div className="editClosetColorRow">
+                <input
+                  type="color"
+                  value={editClosetForm.tempColor}
+                  onChange={(e) =>
+                    setEditClosetForm((prev) => ({
+                      ...prev,
+                      tempColor: e.target.value,
+                    }))
+                  }
+                />
+
+                <button
+                  type="button"
+                  className="editClosetAddColor"
+                  onClick={addEditClosetColor}
+                >
+                  + Adicionar cor
+                </button>
+              </div>
+
+              <div className="editClosetColors">
+                {editClosetForm.colors.map((color, index) => (
+                  <button
+                    key={`${color}-${index}`}
+                    type="button"
+                    className="editClosetColorDot"
+                    style={{ backgroundColor: color }}
+                    onClick={() => removeEditClosetColor(index)}
+                    title="Remover cor"
+                  />
+                ))}
+              </div>
+
+              <label className="editClosetLabel">Fotografia</label>
+
+              <label className="editClosetUpload">
+                {editClosetForm.image ? "Trocar fotografia" : "Adicionar fotografia"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleEditClosetImage}
+                />
+              </label>
+
+              {editClosetForm.image && (
+                <>
+                  <img
+                    src={editClosetForm.image}
+                    alt="Preview da peça"
+                    className="editClosetPreview"
+                  />
+
+                  <button
+                    type="button"
+                    className="editClosetRemovePhoto"
+                    onClick={() =>
+                      setEditClosetForm((prev) => ({
+                        ...prev,
+                        image: "",
+                      }))
+                    }
+                  >
+                    Remover fotografia
+                  </button>
+                </>
+              )}
+
+              <div className="editClosetToggles">
+                <button
+                  type="button"
+                  className={`editClosetToggle ${editClosetForm.favorite ? "active" : ""}`}
+                  onClick={() =>
+                    setEditClosetForm((prev) => ({
+                      ...prev,
+                      favorite: !prev.favorite,
+                    }))
+                  }
+                >
+                  {editClosetForm.favorite ? "❤️ Favorita" : "🤍 Favorita"}
+                </button>
+
+                <button
+                  type="button"
+                  className={`editClosetToggle ${editClosetForm.unavailable ? "active" : ""}`}
+                  onClick={() =>
+                    setEditClosetForm((prev) => ({
+                      ...prev,
+                      unavailable: !prev.unavailable,
+                    }))
+                  }
+                >
+                  {editClosetForm.unavailable ? "🧺 Para lavar" : "🧺 Disponível"}
+                </button>
+              </div>
+
+              <div className="editClosetActionsBottom">
+                <button
+                  type="button"
+                  className="editClosetCancel"
+                  onClick={() => setEditingClosetItem(null)}
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  type="button"
+                  className="editClosetSave"
+                  onClick={saveEditedClosetItem}
+                >
+                  Guardar alterações
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {previewClosetItem && (
           <div 

@@ -1811,6 +1811,289 @@ body {
   text-overflow: ellipsis;
 }
 
+.editClosetOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(10px);
+
+  animation: overlayIn 0.2s ease both;
+}
+
+.editClosetModal {
+  width: min(520px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+
+  padding: 26px;
+  border-radius: 32px;
+
+  background: #fffdf9;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.35);
+
+  animation: previewIn 0.24s ease both;
+
+  scrollbar-width: none;
+}
+
+.editClosetModal::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+.editClosetHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.editClosetHeader span {
+  display: block;
+  margin-bottom: 8px;
+
+  letter-spacing: 3px;
+  color: #93c5fd;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.editClosetHeader h2 {
+  margin: 0;
+
+  color: #0f172a;
+  font-size: 30px;
+  font-weight: 900;
+  line-height: 1.05;
+
+  overflow-wrap: anywhere;
+}
+
+.editClosetClose {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+
+  border: none;
+  border-radius: 999px;
+
+  background: #f1f5f9;
+  color: #111827;
+
+  font-size: 28px;
+  line-height: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+}
+
+.editClosetLabel {
+  display: block;
+
+  margin: 14px 0 8px;
+
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.editClosetInput {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.editClosetColorRow {
+  display: grid;
+  grid-template-columns: 62px 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.editClosetColorRow input[type="color"] {
+  width: 62px;
+  height: 52px;
+
+  padding: 4px;
+  margin: 0;
+
+  border-radius: 16px;
+  cursor: pointer;
+}
+
+.editClosetAddColor {
+  height: 52px;
+
+  border: none;
+  border-radius: 16px;
+
+  background: #111827;
+  color: white;
+
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.editClosetColors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  margin-top: 12px;
+  margin-bottom: 6px;
+}
+
+.editClosetColorDot {
+  width: 30px;
+  height: 30px;
+
+  border-radius: 999px;
+  border: 3px solid white;
+
+  box-shadow: 0 0 0 1px #cbd5e1, 0 8px 16px rgba(15, 23, 42, 0.14);
+
+  cursor: pointer;
+}
+
+.editClosetColorDot:hover {
+  transform: scale(1.12);
+}
+
+.editClosetUpload {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 15px 18px;
+  border-radius: 18px;
+
+  background: #eef2ff;
+  color: #1d4ed8;
+
+  border: 1px dashed rgba(37, 99, 235, 0.35);
+
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.editClosetUpload input {
+  display: none;
+}
+
+.editClosetPreview {
+  width: 100%;
+  max-height: 280px;
+
+  object-fit: cover;
+
+  margin-top: 14px;
+  border-radius: 24px;
+
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.editClosetRemovePhoto {
+  width: 100%;
+
+  margin-top: 10px;
+  padding: 13px 16px;
+
+  border: none;
+  border-radius: 16px;
+
+  background: #fee2e2;
+  color: #b91c1c;
+
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.editClosetToggles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+
+  margin-top: 18px;
+}
+
+.editClosetToggle {
+  padding: 14px 16px;
+
+  border: none;
+  border-radius: 18px;
+
+  background: #f1f5f9;
+  color: #0f172a;
+
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.editClosetToggle.active {
+  background: #111827;
+  color: white;
+}
+
+.editClosetActionsBottom {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 12px;
+
+  margin-top: 22px;
+}
+
+.editClosetCancel,
+.editClosetSave {
+  padding: 15px 18px;
+
+  border: none;
+  border-radius: 18px;
+
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.editClosetCancel {
+  background: #f1f5f9;
+  color: #111827;
+}
+
+.editClosetSave {
+  background: #111827;
+  color: white;
+}
+
+.editClosetSave:hover,
+.editClosetAddColor:hover {
+  background: #020617;
+}
+
+@media (max-width: 600px) {
+  .editClosetToggles,
+  .editClosetActionsBottom {
+    grid-template-columns: 1fr;
+  }
+
+  .editClosetHeader h2 {
+    font-size: 25px;
+  }
+}
+
 
 
 
