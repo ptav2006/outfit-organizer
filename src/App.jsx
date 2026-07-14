@@ -203,11 +203,51 @@ export default function App() {
     setShowAddClosetItem(false);
   }
 
+  const laundryClosetCount = computedClosetItems.filter(
+    (item) => item.unavailable
+  ).length;
+
+  const closetFilterOptions = [
+    {
+      value: "Todos",
+      label: "Todos",
+      count: computedClosetItems.length,
+    },
+    {
+      value: "Favoritos",
+      label: "Favoritos",
+      count: computedClosetItems.filter((item) => item.favorite).length,
+    },
+    {
+      value: "Para lavar",
+      label: "Para lavar",
+      icon: "🧺",
+      count: laundryClosetCount,
+    },
+    ...categories.map((category) => {
+      const categoryItems = computedClosetItems.filter(
+        (item) => item.category === category
+      );
+
+      return {
+        value: category,
+        label: category,
+        count: categoryItems.length,
+        laundryCount: categoryItems.filter((item) => item.unavailable).length,
+        showLaundryBadge: true,
+      };
+    }),
+  ];
+
   const filteredCloset = computedClosetItems.filter((item) => {
     if (closetFilter === "Todos") return true;
 
     if (closetFilter === "Favoritos") {
       return item.favorite;
+    }
+
+    if (closetFilter === "Para lavar") {
+      return item.unavailable;
     }
 
     return item.category === closetFilter;
@@ -1025,7 +1065,13 @@ export default function App() {
                       + Nova peça
                     </button>
 
-                    <span className="closetCount">{filteredCloset.length} peças</span>
+                    <span className="closetCount">
+                      {filteredCloset.length} peças
+
+                      {laundryClosetCount > 0 && (
+                        <small>🧺 {laundryClosetCount} para lavar</small>
+                      )}
+                    </span>
                   </div>
                 </div>
 
@@ -1117,19 +1163,41 @@ export default function App() {
                 )}
 
                 <div className="closetFilters">
-                  {["Todos", "Favoritos", ...categories].map((cat) => (
+                  {closetFilterOptions.map((option) => (
                     <button
-                      key={cat}
-                      className={`filterChip ${closetFilter === cat ? "active" : ""}`}
-                      onClick={() => setClosetFilter(cat)}
+                      key={option.value}
+                      className={`filterChip ${closetFilter === option.value ? "active" : ""} ${
+                        option.value === "Para lavar" ? "laundryFilterChip" : ""
+                      }`}
+                      onClick={() => setClosetFilter(option.value)}
                     >
-                      {cat}
+                      <span className="filterChipText">
+                        {option.icon && (
+                          <span className="filterChipIcon">{option.icon}</span>
+                        )}
+
+                        {option.label}
+                      </span>
+
+                      {option.count > 0 && (
+                        <span className="filterChipCount">{option.count}</span>
+                      )}
+
+                      {option.showLaundryBadge && option.laundryCount > 0 && (
+                        <span className="filterChipLaundry">
+                          🧺 {option.laundryCount}
+                        </span>
+                      )}
                     </button>
                   ))}
                 </div>
 
                 {filteredCloset.length === 0 ? (
-                  <p className="closetEmpty">As peças aparecem aqui quando guardares outfits.</p>
+                  <p className="closetEmpty">
+                    {closetFilter === "Para lavar"
+                      ? "Não tens peças para lavar."
+                      : "As peças aparecem aqui quando guardares outfits."}
+                  </p>
                 ) : (
                   <div className="closetGrid">
                     {filteredCloset.map((item) => (

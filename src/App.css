@@ -3132,6 +3132,109 @@ body {
   }
 }
 
+.filterChip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.filterChipText {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  white-space: nowrap;
+}
+
+.filterChipIcon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.filterChipCount {
+  min-width: 22px;
+  height: 22px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 7px;
+
+  border-radius: 999px;
+
+  background: rgba(15, 23, 42, 0.08);
+  color: #475569;
+
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.filterChipLaundry {
+  height: 22px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 8px;
+
+  border-radius: 999px;
+
+  background: #fff7ed;
+  color: #c2410c;
+
+  border: 1px solid rgba(251, 146, 60, 0.24);
+
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.filterChip.active .filterChipCount,
+.filterChip.active .filterChipLaundry {
+  background: rgba(255, 255, 255, 0.18);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.laundryFilterChip {
+  background: #fff7ed;
+  color: #9a3412;
+  border-color: rgba(251, 146, 60, 0.28);
+}
+
+.laundryFilterChip:hover {
+  background: #ffedd5;
+}
+
+.laundryFilterChip.active {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: white;
+  border: none;
+  box-shadow: 0 10px 24px rgba(234, 88, 12, 0.24);
+}
+
+.closetCount {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.closetCount small {
+  padding: 5px 8px;
+
+  border-radius: 999px;
+
+  background: #fff7ed;
+  color: #c2410c;
+
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
 
 
 
