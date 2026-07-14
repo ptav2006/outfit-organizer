@@ -28,6 +28,50 @@ const outfitFunctions = [
   "Outro"
 ];
 
+function CustomSelect({ value, options, onChange, className = "" }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div
+      className={`customSelect ${open ? "open" : ""} ${className}`}
+      tabIndex={0}
+      onBlur={() => setOpen(false)}
+    >
+      <button
+        type="button"
+        className="customSelectButton"
+        onClick={() => setOpen((prev) => !prev)}
+      >
+        <span>{value}</span>
+        <span className="customSelectArrow">⌄</span>
+      </button>
+
+      {open && (
+        <div className="customSelectMenu">
+          {options.map((option) => (
+            <button
+              key={option}
+              type="button"
+              className={`customSelectOption ${value === option ? "selected" : ""}`}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => {
+                onChange(option);
+                setOpen(false);
+              }}
+            >
+              <span>{option}</span>
+
+              {value === option && (
+                <span className="customSelectCheck">✓</span>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 
 export default function App() {
   const [outfits, setOutfits] = useState(() => {
@@ -670,19 +714,17 @@ export default function App() {
               />
 
               <div className="grid2">
-              <select
-                value={form.style}
-                onChange={e => setForm({ ...form, style: e.target.value })}
-              >
-                {outfitStyles.map(s => <option key={s}>{s}</option>)}
-              </select>
+                <CustomSelect
+                  value={form.style}
+                  options={outfitStyles}
+                  onChange={(value) => setForm({ ...form, style: value })}
+                />
 
-              <select
-                value={form.function}
-                onChange={e => setForm({ ...form, function: e.target.value })}
-              >
-                {outfitFunctions.map(f => <option key={f}>{f}</option>)}
-              </select>
+                <CustomSelect
+                  value={form.function}
+                  options={outfitFunctions}
+                  onChange={(value) => setForm({ ...form, function: value })}
+                />
               </div>
 
             {form.function === "Outro" && (
@@ -753,12 +795,11 @@ export default function App() {
                     <div className="controlGroup">
                       <span className="controlLabel">Categoria</span>
 
-                      <select
+                      <CustomSelect
                         value={piece.category}
-                        onChange={e => updatePiece(index, "category", e.target.value)}
-                      >
-                        {categories.map(c => <option key={c}>{c}</option>)}
-                      </select>
+                        options={categories}
+                        onChange={(value) => updatePiece(index, "category", value)}
+                      />
                     </div>
 
                     <div className="controlGroup colorGroup">
@@ -832,11 +873,11 @@ export default function App() {
                 onChange={e => setSearch(e.target.value)}
               />
 
-              <select value={filter} onChange={e => setFilter(e.target.value)}>
-                <option>Todos</option>
-                <option>Favoritos</option>
-                {outfitStyles.map(s => <option key={s}>{s}</option>)}
-              </select>
+              <CustomSelect
+                value={filter}
+                options={["Todos", "Favoritos", ...outfitStyles]}
+                onChange={(value) => setFilter(value)}
+              />
             </div>
 
             <div className="closetToggle">
@@ -894,21 +935,16 @@ export default function App() {
                       }
                     />
 
-                    <select
+                    <CustomSelect
                       value={newClosetItem.category}
-                      onChange={(e) =>
+                      options={categories}
+                      onChange={(value) =>
                         setNewClosetItem((prev) => ({
                           ...prev,
-                          category: e.target.value,
+                          category: value,
                         }))
                       }
-                    >
-                      {categories.map((category) => (
-                        <option key={category} value={category}>
-                          {category}
-                        </option>
-                      ))}
-                    </select>
+                    />
 
                     <label className="closetUpload">
                       {newClosetItem.image ? "Imagem escolhida ✅" : "Adicionar imagem"}
@@ -1220,22 +1256,16 @@ export default function App() {
               />
 
               <label className="editClosetLabel">Categoria</label>
-              <select
-                className="editClosetInput"
+              <CustomSelect
                 value={editClosetForm.category}
-                onChange={(e) =>
+                options={categories}
+                onChange={(value) =>
                   setEditClosetForm((prev) => ({
                     ...prev,
-                    category: e.target.value,
+                    category: value,
                   }))
                 }
-              >
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
+              />
 
               <label className="editClosetLabel">Cores</label>
 
