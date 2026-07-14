@@ -97,6 +97,8 @@ export default function App() {
   const [showCloset, setShowCloset] = useState(false);
   const [laundryMode, setLaundryMode] = useState(false);
   const [previewClosetItem, setPreviewClosetItem] = useState(null);
+  const [usingTodayOutfit, setUsingTodayOutfit] = useState(null);
+  const [todayLaundryPieces, setTodayLaundryPieces] = useState([]);
 
   const [editingClosetItem, setEditingClosetItem] = useState(null);
 
@@ -396,6 +398,80 @@ export default function App() {
 
   function isOutfitPiecesOpen(outfitId) {
     return openPiecesOutfits.includes(outfitId);
+  }
+
+  function openUseToday(outfit) {
+    setUsingTodayOutfit(outfit);
+    setTodayLaundryPieces([]);
+  }
+
+  function toggleTodayLaundryPiece(piece) {
+    const pieceKey = getPieceKey(piece);
+
+    setTodayLaundryPieces((prev) =>
+      prev.includes(pieceKey)
+        ? prev.filter((key) => key !== pieceKey)
+        : [...prev, pieceKey]
+    );
+  }
+
+  function selectAllTodayLaundryPieces() {
+    if (!usingTodayOutfit) return;
+
+    setTodayLaundryPieces(
+      (usingTodayOutfit.pieces || []).map((piece) => getPieceKey(piece))
+    );
+  }
+
+  function clearTodayLaundryPieces() {
+    setTodayLaundryPieces([]);
+  }
+
+  function confirmUseToday() {
+    if (!usingTodayOutfit) return;
+
+    const selectedPieces = new Set(todayLaundryPieces);
+    const usedAt = new Date().toISOString();
+
+    const updatedOutfits = outfits.map((outfit) => ({
+      ...outfit,
+
+      lastUsedAt:
+        outfit.id === usingTodayOutfit.id
+          ? usedAt
+          : outfit.lastUsedAt,
+
+      pieces: (outfit.pieces || []).map((piece) =>
+        selectedPieces.has(getPieceKey(piece))
+          ? { ...piece, unavailable: true }
+          : piece
+      ),
+    }));
+
+    setOutfits(updatedOutfits);
+    localStorage.setItem("outfits-masculinos", JSON.stringify(updatedOutfits));
+
+    setUsingTodayOutfit(null);
+    setTodayLaundryPieces([]);
+  }
+
+  function formatLastUsed(dateString) {
+    if (!dateString) return "";
+
+    const date = new Date(dateString);
+    const today = new Date();
+
+    const isToday =
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear();
+
+    if (isToday) return "Usado hoje";
+
+    return `Última vez: ${date.toLocaleDateString("pt-PT", {
+      day: "2-digit",
+      month: "2-digit",
+    })}`;
   }
 
   function toggleFavorite(id) {
@@ -1178,6 +1254,13 @@ export default function App() {
                         <span>{outfit.style}</span>
                       </div>
 
+                      {outfit.lastUsedAt && (
+                        <div className="lastUsedBadge">
+                          <span>👕</span>
+                          <strong>{formatLastUsed(outfit.lastUsedAt)}</strong>
+                        </div>
+                      )}
+
                       {getUnavailablePiecesCount(outfit) > 0 && (
                         <div className="outfitLaundryBar">
                           <span>🧺</span>
@@ -1235,6 +1318,13 @@ export default function App() {
                         </div>
                       )}
                       <div className="actions">
+                        <button 
+                          className="useToday"
+                          onClick={() => openUseToday(outfit)}
+                        >
+                          👕 Usar hoje
+                        </button>
+
                         <button 
                           className="edit"
                           onClick={() => editOutfit(outfit)}
@@ -1419,6 +1509,101 @@ export default function App() {
                   onClick={saveEditedClosetItem}
                 >
                   Guardar alterações
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {usingTodayOutfit && (
+          <div
+            className="useTodayOverlay"
+            onClick={() => setUsingTodayOutfit(null)}
+          >
+            <div
+              className="useTodayModal"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="useTodayHeader">
+                <div>
+                  <span>USAR HOJE</span>
+                  <h2>{usingTodayOutfit.title}</h2>
+                  <p>Escolhe as peças que queres meter para lavar. Podes não escolher nenhuma.</p>
+                </div>
+
+                <button
+                  type="button"
+                  className="useTodayClose"
+                  onClick={() => setUsingTodayOutfit(null)}
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="useTodayQuickActions">
+                <button type="button" onClick={selectAllTodayLaundryPieces}>
+                  Selecionar todas
+                </button>
+
+                <button type="button" onClick={clearTodayLaundryPieces}>
+                  Limpar
+                </button>
+              </div>
+
+              <div className="useTodayPieces">
+                {(usingTodayOutfit.pieces || []).map((piece, index) => {
+                  const pieceKey = getPieceKey(piece);
+                  const selected = todayLaundryPieces.includes(pieceKey);
+                  const alreadyUnavailable = isPieceUnavailable(piece);
+
+                  return (
+                    <button
+                      key={`${pieceKey}-${index}`}
+                      type="button"
+                      className={`useTodayPiece ${selected ? "selected" : ""}`}
+                      onClick={() => toggleTodayLaundryPiece(piece)}
+                    >
+                      <span className="useTodayCheck">
+                        {selected ? "✓" : ""}
+                      </span>
+
+                      <div className="useTodayPieceInfo">
+                        <strong>{piece.name}</strong>
+                        <small>
+                          {piece.category}
+                          {alreadyUnavailable ? " · já está para lavar" : ""}
+                        </small>
+                      </div>
+
+                      <div className="useTodayColors">
+                        {(piece.colors || [piece.tempColor || "#ffffff"]).map((color, i) => (
+                          <span
+                            key={`${color}-${i}`}
+                            className="useTodayColor"
+                            style={{ backgroundColor: color }}
+                          />
+                        ))}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="useTodayActions">
+                <button
+                  type="button"
+                  className="useTodayCancel"
+                  onClick={() => setUsingTodayOutfit(null)}
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  type="button"
+                  className="useTodaySave"
+                  onClick={confirmUseToday}
+                >
+                  Guardar uso
                 </button>
               </div>
             </div>
