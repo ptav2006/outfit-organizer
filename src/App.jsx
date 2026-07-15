@@ -115,6 +115,21 @@ export default function App() {
 
   const [editingClosetItem, setEditingClosetItem] = useState(null);
 
+  const [profile, setProfile] = useState(() => {
+    const saved = localStorage.getItem("user-profile");
+
+    return saved
+      ? JSON.parse(saved)
+      : {
+          name: "",
+          username: "",
+          bio: "",
+          avatar: "",
+        };
+  });
+
+  const [profileSaved, setProfileSaved] = useState(false);
+
   const [editClosetForm, setEditClosetForm] = useState({
     name: "",
     category: "T-shirt",
@@ -290,6 +305,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("outfit-history", JSON.stringify(outfitHistory));
   }, [outfitHistory]);
+
+  useEffect(() => {
+    localStorage.setItem("user-profile", JSON.stringify(profile));
+  }, [profile]);
 
   function addPiece() {
     setForm({
@@ -907,6 +926,7 @@ export default function App() {
     (activeTab === "create" && showCloset);
   
   const showHistoryArea = activeTab === "history";
+  const showSettingsArea = activeTab === "settings";
   const showLaundryArea = activeTab === "laundry";
 
   const laundryItems = computedClosetItems.filter((item) => item.unavailable);
@@ -1094,6 +1114,32 @@ export default function App() {
     setNoteDraft("");
   }
 
+  function handleProfileAvatar(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setProfile((prev) => ({
+        ...prev,
+        avatar: reader.result,
+      }));
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  function saveProfileSettings() {
+    localStorage.setItem("user-profile", JSON.stringify(profile));
+
+    setProfileSaved(true);
+
+    setTimeout(() => {
+      setProfileSaved(false);
+    }, 1600);
+  }
+
   
 
   return (
@@ -1153,6 +1199,14 @@ export default function App() {
             onClick={() => handleTabChange("history")}
           >
             <span>📅 Histórico</span>
+          </button>
+
+          <button
+            type="button"
+            className={`appTab ${activeTab === "settings" ? "active" : ""}`}
+            onClick={() => handleTabChange("settings")}
+          >
+            <span>⚙️ Definições</span>
           </button>
         </nav>
 
@@ -1361,7 +1415,7 @@ export default function App() {
             </section>
           )}
 
-          {(showOutfitsArea || showClosetArea || showLaundryArea || showHistoryArea) && (
+          {(showOutfitsArea || showClosetArea || showLaundryArea || showHistoryArea || showSettingsArea) && (
             <section className="content">
               {showOutfitsArea && (
                 <div className="toolbar looksToolbar">
@@ -1532,6 +1586,117 @@ export default function App() {
                       ))}
                     </div>
                   )}
+                </div>
+              )}
+
+              {showSettingsArea && (
+                <div className="settingsPage">
+                  <div className="settingsHeader">
+                    <div>
+                      <p className="tag">DEFINIÇÕES</p>
+                      <h2>Perfil da app</h2>
+                      <span>Personaliza a tua conta e prepara o perfil para a futura versão com login.</span>
+                    </div>
+                  </div>
+
+                  <div className="settingsGrid">
+                    <div className="profileCard">
+                      <div className="profileAvatarArea">
+                        {profile.avatar ? (
+                          <img
+                            src={profile.avatar}
+                            alt="Foto de perfil"
+                            className="profileAvatar"
+                          />
+                        ) : (
+                          <div className="profileAvatarPlaceholder">
+                            {profile.name?.trim()
+                              ? profile.name.trim().charAt(0).toUpperCase()
+                              : "👤"}
+                          </div>
+                        )}
+
+                        <label className="profileAvatarUpload">
+                          Alterar foto
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleProfileAvatar}
+                          />
+                        </label>
+                      </div>
+
+                      <div className="profilePreview">
+                        <span>Pré-visualização</span>
+                        <h3>{profile.name || "O teu nome"}</h3>
+                        <p>{profile.username ? `@${profile.username}` : "@username"}</p>
+
+                        {profile.bio && (
+                          <small>{profile.bio}</small>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="settingsForm">
+                      <label>Nome</label>
+                      <input
+                        type="text"
+                        placeholder="O teu nome"
+                        value={profile.name}
+                        onChange={(e) =>
+                          setProfile((prev) => ({
+                            ...prev,
+                            name: e.target.value,
+                          }))
+                        }
+                      />
+
+                      <label>Nome de utilizador</label>
+                      <input
+                        type="text"
+                        placeholder="ex: vascofits"
+                        value={profile.username}
+                        onChange={(e) =>
+                          setProfile((prev) => ({
+                            ...prev,
+                            username: e.target.value.replace(/\s/g, "").toLowerCase(),
+                          }))
+                        }
+                      />
+
+                      <label>Bio / nota pessoal</label>
+                      <textarea
+                        placeholder="Ex: uso esta app para organizar outfits de universidade, saídas e trabalho..."
+                        value={profile.bio}
+                        onChange={(e) =>
+                          setProfile((prev) => ({
+                            ...prev,
+                            bio: e.target.value,
+                          }))
+                        }
+                      />
+
+                      <button
+                        type="button"
+                        className={`saveSettingsBtn ${profileSaved ? "saved" : ""}`}
+                        onClick={saveProfileSettings}
+                      >
+                        {profileSaved ? "Guardado ✅" : "Guardar alterações"}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="futureAccountBox">
+                    <div>
+                      <strong>Conta online em breve</strong>
+                      <p>
+                        Mais tarde, esta zona vai ligar ao login, sincronização entre dispositivos
+                        e dados guardados na cloud.
+                      </p>
+                    </div>
+
+                    <span>Supabase ready</span>
+                  </div>
                 </div>
               )}
 
