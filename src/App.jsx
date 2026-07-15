@@ -1355,21 +1355,43 @@ export default function App() {
                         <span className="controlLabel">Cor</span>
 
                         <div className="colorPickerRow">
-                          <input
-                            type="color"
-                            value={piece.tempColor || "#ffffff"}
-                            onChange={e => updatePiece(index, "tempColor", e.target.value)}
-                            className="colorPicker"
-                          />
+                          <label className="colorPickerButton" title="Escolher cor">
+                            <input
+                              type="color"
+                              value={piece.tempColor || "#ffffff"}
+                              onChange={(e) => updatePiece(index, "tempColor", e.target.value)}
+                              className="colorPickerNative"
+                            />
+
+                            <span
+                              className="colorPickerDot"
+                              style={{ backgroundColor: piece.tempColor || "#ffffff" }}
+                            />
+                          </label>
 
                           <button
                             type="button"
                             className="addColorBtn"
                             onClick={() => addColorToPiece(index)}
                           >
-                            +
+                            + Cor
                           </button>
                         </div>
+
+                        {piece.colors?.length > 0 && (
+                          <div className="pieceSelectedColors">
+                            {piece.colors.map((color, colorIndex) => (
+                              <button
+                                key={`${color}-${colorIndex}`}
+                                type="button"
+                                className="pieceSelectedColor"
+                                style={{ backgroundColor: color }}
+                                onClick={() => removeColorFromPiece(index, colorIndex)}
+                                title="Remover cor"
+                              />
+                            ))}
+                          </div>
+                        )}
                       </div>
 
                       <div className="controlGroup">
