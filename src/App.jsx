@@ -28,6 +28,8 @@ const outfitFunctions = [
   "Outro"
 ];
 
+const RECENT_OUTFIT_DAYS = 7;
+
 function CustomSelect({ value, options, onChange, className = "" }) {
   const [open, setOpen] = useState(false);
 
@@ -528,20 +530,47 @@ export default function App() {
     setTodayLaundryPieces([]);
   }
 
-  function formatLastUsed(dateString) {
-    if (!dateString) return "";
+  function getDaysSince(dateString) {
+    if (!dateString) return null;
 
-    const date = new Date(dateString);
+    const usedDate = new Date(dateString);
     const today = new Date();
 
-    const isToday =
-      date.getDate() === today.getDate() &&
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear();
+    const usedDay = new Date(
+      usedDate.getFullYear(),
+      usedDate.getMonth(),
+      usedDate.getDate()
+    );
 
-    if (isToday) return "Usado hoje";
+    const currentDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    );
 
-    return `Última vez: ${date.toLocaleDateString("pt-PT", {
+    const diffTime = currentDay - usedDay;
+    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  function isRecentlyUsed(outfit) {
+    const daysSince = getDaysSince(outfit.lastUsedAt);
+
+    return daysSince !== null && daysSince <= RECENT_OUTFIT_DAYS;
+  }
+
+  function formatLastUsed(dateString) {
+    const daysSince = getDaysSince(dateString);
+
+    if (daysSince === null) return "";
+
+    if (daysSince === 0) return "Usado hoje";
+    if (daysSince === 1) return "Usado ontem";
+
+    if (daysSince <= RECENT_OUTFIT_DAYS) {
+      return `Usado há ${daysSince} dias`;
+    }
+
+    return `Última vez: ${new Date(dateString).toLocaleDateString("pt-PT", {
       day: "2-digit",
       month: "2-digit",
     })}`;
@@ -799,6 +828,10 @@ export default function App() {
 
       if (filter === "Favoritos") {
         return matchesSearch && outfit.favorite;
+      }
+
+      if (filter === "Não usados recentemente") {
+        return matchesSearch && !isRecentlyUsed(outfit);
       }
 
       const matchesFilter = filter === "Todos" || outfit.style === filter;
@@ -1192,7 +1225,7 @@ export default function App() {
 
                   <CustomSelect
                     value={filter}
-                    options={["Todos", "Favoritos", ...outfitStyles]}
+                    options={["Todos", "Favoritos", "Não usados recentemente", ...outfitStyles]}
                     onChange={(value) => setFilter(value)}
                   />
                 </div>
@@ -1539,8 +1572,8 @@ export default function App() {
                           </div>
 
                           {outfit.lastUsedAt && (
-                            <div className="lastUsedBadge">
-                              <span>👕</span>
+                            <div className={`lastUsedBadge ${isRecentlyUsed(outfit) ? "recentUseBadge" : ""}`}>
+                              <span>{isRecentlyUsed(outfit) ? "⏱️" : "👕"}</span>
                               <strong>{formatLastUsed(outfit.lastUsedAt)}</strong>
                             </div>
                           )}

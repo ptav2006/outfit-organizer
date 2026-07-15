@@ -3878,6 +3878,17 @@ body {
   }
 }
 
+.recentUseBadge {
+  background: linear-gradient(135deg, #fff7ed, #f8fafc);
+  color: #c2410c;
+
+  border: 1px solid rgba(251, 146, 60, 0.28);
+}
+
+.recentUseBadge strong {
+  color: #c2410c;
+}
+
 
 
 
