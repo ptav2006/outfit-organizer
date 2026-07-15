@@ -103,6 +103,8 @@ export default function App() {
   const [usingTodayOutfit, setUsingTodayOutfit] = useState(null);
   const [todayLaundryPieces, setTodayLaundryPieces] = useState([]);
   const [selectedHistoryDate, setSelectedHistoryDate] = useState(null);
+  const [suggestedOutfit, setSuggestedOutfit] = useState(null);
+  const [outfitSuggestionNotice, setOutfitSuggestionNotice] = useState("");
 
   const [outfitHistory, setOutfitHistory] = useState(() => {
     const saved = localStorage.getItem("outfit-history");
@@ -946,6 +948,68 @@ export default function App() {
     (group) => group.date === selectedHistoryDate
   );
 
+  function getRandomItem(items) {
+    if (!items || items.length === 0) return null;
+
+    const randomIndex = Math.floor(Math.random() * items.length);
+    return items[randomIndex];
+  }
+
+  function chooseOutfitForUser(excludeId = null) {
+    const availableOutfits = outfits.filter((outfit) => {
+      const isExcluded = outfit.id === excludeId;
+      const hasUnavailablePieces = getUnavailablePiecesCount(outfit) > 0;
+
+      return !isExcluded && !hasUnavailablePieces;
+    });
+
+    const notRecentlyUsed = availableOutfits.filter(
+      (outfit) => !isRecentlyUsed(outfit)
+    );
+
+    if (notRecentlyUsed.length > 0) {
+      setSuggestedOutfit(getRandomItem(notRecentlyUsed));
+      setOutfitSuggestionNotice("");
+      return;
+    }
+
+    if (availableOutfits.length > 0) {
+      setSuggestedOutfit(getRandomItem(availableOutfits));
+      setOutfitSuggestionNotice(
+        "Todos os outfits disponíveis foram usados recentemente, por isso escolhi um na mesma."
+      );
+      return;
+    }
+
+    const fallbackOutfits = outfits.filter((outfit) => outfit.id !== excludeId);
+
+    if (fallbackOutfits.length > 0) {
+      setSuggestedOutfit(getRandomItem(fallbackOutfits));
+      setOutfitSuggestionNotice(
+        "Não encontrei outfits totalmente disponíveis. Esta sugestão pode ter peças para lavar."
+      );
+      return;
+    }
+
+    setSuggestedOutfit(null);
+    setOutfitSuggestionNotice("Ainda não tens outfits suficientes para sugerir.");
+  }
+
+  function suggestOutfit() {
+    chooseOutfitForUser();
+  }
+
+  function suggestAnotherOutfit() {
+    chooseOutfitForUser(suggestedOutfit?.id);
+  }
+
+  function useSuggestedOutfit() {
+    if (!suggestedOutfit) return;
+
+    openUseToday(suggestedOutfit);
+    setSuggestedOutfit(null);
+  }
+
   
 
   return (
@@ -1216,7 +1280,7 @@ export default function App() {
           {(showOutfitsArea || showClosetArea || showHistoryArea) && (
             <section className="content">
               {showOutfitsArea && (
-                <div className="toolbar">
+                <div className="toolbar looksToolbar">
                   <input
                     placeholder="Pesquisar por peça, cor, estilo..."
                     value={search}
@@ -1228,6 +1292,14 @@ export default function App() {
                     options={["Todos", "Favoritos", "Não usados recentemente", ...outfitStyles]}
                     onChange={(value) => setFilter(value)}
                   />
+
+                  <button
+                    type="button"
+                    className="suggestOutfitBtn"
+                    onClick={suggestOutfit}
+                  >
+                    ✨ Escolher por mim
+                  </button>
                 </div>
               )}
 
@@ -1914,6 +1986,108 @@ export default function App() {
                     </div>
                   );
                 })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {suggestedOutfit && (
+          <div
+            className="suggestOutfitOverlay"
+            onClick={() => setSuggestedOutfit(null)}
+          >
+            <div
+              className="suggestOutfitModal"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="suggestOutfitHeader">
+                <div>
+                  <span>SUGESTÃO</span>
+                  <h2>Escolhi este outfit para ti</h2>
+                  <p>
+                    Dei prioridade a outfits disponíveis e que não foram usados recentemente.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  className="suggestOutfitClose"
+                  onClick={() => setSuggestedOutfit(null)}
+                >
+                  ×
+                </button>
+              </div>
+
+              {outfitSuggestionNotice && (
+                <div className="suggestOutfitNotice">
+                  {outfitSuggestionNotice}
+                </div>
+              )}
+
+              <div className="suggestOutfitCard">
+                {suggestedOutfit.image ? (
+                  <img
+                    src={suggestedOutfit.image}
+                    alt={suggestedOutfit.title}
+                  />
+                ) : (
+                  <div className="suggestOutfitPlaceholder">👕</div>
+                )}
+
+                <div className="suggestOutfitInfo">
+                  <div className="suggestOutfitTop">
+                    <div>
+                      <h3>{suggestedOutfit.title}</h3>
+                      <p>
+                        {suggestedOutfit.function === "Outro"
+                          ? suggestedOutfit.customFunction
+                          : suggestedOutfit.function} · {suggestedOutfit.style}
+                      </p>
+                    </div>
+
+                    {suggestedOutfit.lastUsedAt && (
+                      <span>{formatLastUsed(suggestedOutfit.lastUsedAt)}</span>
+                    )}
+                  </div>
+
+                  {getUnavailablePiecesCount(suggestedOutfit) > 0 && (
+                    <div className="suggestOutfitLaundryWarning">
+                      🧺 Este outfit tem {getUnavailablePiecesCount(suggestedOutfit)} peça(s) para lavar.
+                    </div>
+                  )}
+
+                  <div className="suggestOutfitPieces">
+                    {(suggestedOutfit.pieces || []).map((piece, index) => (
+                      <div
+                        key={`${piece.name}-${index}`}
+                        className={`suggestOutfitPiece ${
+                          isPieceUnavailable(piece) ? "unavailable" : ""
+                        }`}
+                      >
+                        <span>{piece.category}</span>
+                        <strong>{piece.name}</strong>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="suggestOutfitActions">
+                <button
+                  type="button"
+                  className="suggestAnotherBtn"
+                  onClick={suggestAnotherOutfit}
+                >
+                  Escolher outro
+                </button>
+
+                <button
+                  type="button"
+                  className="suggestUseBtn"
+                  onClick={useSuggestedOutfit}
+                >
+                  Usar este
+                </button>
               </div>
             </div>
           </div>
