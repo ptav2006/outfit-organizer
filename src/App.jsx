@@ -902,10 +902,12 @@ export default function App() {
 
   const showClosetArea =
     activeTab === "closet" ||
-    activeTab === "laundry" ||
     (activeTab === "create" && showCloset);
   
   const showHistoryArea = activeTab === "history";
+  const showLaundryArea = activeTab === "laundry";
+
+  const laundryItems = computedClosetItems.filter((item) => item.unavailable);
   const favoriteOutfitsCount = outfits.filter((outfit) => outfit.favorite).length;
 
   function getHistoryDateKey(dateString) {
@@ -1021,6 +1023,52 @@ export default function App() {
 
     openUseToday(suggestedOutfit);
     setSuggestedOutfit(null);
+  }
+
+  function markClosetItemAsWashed(item) {
+    if (item.source === "manual") {
+      setManualClosetItems((prev) =>
+        prev.map((manualItem) =>
+          manualItem.id === item.id
+            ? { ...manualItem, unavailable: false }
+            : manualItem
+        )
+      );
+
+      return;
+    }
+
+    const updatedOutfits = outfits.map((outfit) => ({
+      ...outfit,
+      pieces: (outfit.pieces || []).map((piece) =>
+        piece.name === item.name && piece.category === item.category
+          ? { ...piece, unavailable: false }
+          : piece
+      ),
+    }));
+
+    setOutfits(updatedOutfits);
+    localStorage.setItem("outfits-masculinos", JSON.stringify(updatedOutfits));
+  }
+
+  function markAllLaundryAsWashed() {
+    setManualClosetItems((prev) =>
+      prev.map((item) => ({
+        ...item,
+        unavailable: false,
+      }))
+    );
+
+    const updatedOutfits = outfits.map((outfit) => ({
+      ...outfit,
+      pieces: (outfit.pieces || []).map((piece) => ({
+        ...piece,
+        unavailable: false,
+      })),
+    }));
+
+    setOutfits(updatedOutfits);
+    localStorage.setItem("outfits-masculinos", JSON.stringify(updatedOutfits));
   }
 
   
@@ -1290,7 +1338,7 @@ export default function App() {
             </section>
           )}
 
-          {(showOutfitsArea || showClosetArea || showHistoryArea) && (
+          {(showOutfitsArea || showClosetArea || showLaundryArea || showHistoryArea) && (
             <section className="content">
               {showOutfitsArea && (
                 <div className="toolbar looksToolbar">
@@ -1376,6 +1424,88 @@ export default function App() {
 
                           <span className="historyDateArrow">›</span>
                         </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {showLaundryArea && (
+                <div className="laundryPage">
+                  <div className="laundryPageHeader">
+                    <div>
+                      <p className="tag">LAVANDARIA</p>
+                      <h2>Peças para lavar</h2>
+                      <span>Consulta e marca como lavadas as peças indisponíveis.</span>
+                    </div>
+
+                    <strong>
+                      {laundryItems.length === 1
+                        ? "1 peça"
+                        : `${laundryItems.length} peças`}
+                    </strong>
+                  </div>
+
+                  {laundryItems.length > 0 && (
+                    <button
+                      type="button"
+                      className="markAllWashedBtn"
+                      onClick={markAllLaundryAsWashed}
+                    >
+                      ✓ Marcar tudo como lavado
+                    </button>
+                  )}
+
+                  {laundryItems.length === 0 ? (
+                    <div className="laundryEmpty">
+                      <div>🧺</div>
+                      <h3>Tudo limpo</h3>
+                      <p>Não tens peças marcadas para lavar.</p>
+                    </div>
+                  ) : (
+                    <div className="laundryGrid">
+                      {laundryItems.map((item) => (
+                        <div
+                          key={item.closetKey || item.id}
+                          className="laundryItemCard"
+                        >
+                          {item.image ? (
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="laundryItemImage"
+                            />
+                          ) : (
+                            <div className="laundryItemPlaceholder">
+                              🧺
+                            </div>
+                          )}
+
+                          <div className="laundryItemInfo">
+                            <div>
+                              <span>{item.category}</span>
+                              <h3>{item.name}</h3>
+                            </div>
+
+                            <div className="laundryItemColors">
+                              {(item.colors || [item.tempColor || "#ffffff"]).map((color, index) => (
+                                <span
+                                  key={`${color}-${index}`}
+                                  className="laundryItemColor"
+                                  style={{ backgroundColor: color }}
+                                />
+                              ))}
+                            </div>
+
+                            <button
+                              type="button"
+                              className="markWashedBtn"
+                              onClick={() => markClosetItemAsWashed(item)}
+                            >
+                              ✓ Marcar como lavado
+                            </button>
+                          </div>
+                        </div>
                       ))}
                     </div>
                   )}

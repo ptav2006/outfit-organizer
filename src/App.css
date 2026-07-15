@@ -4346,6 +4346,262 @@ body {
   z-index: 1;
 }
 
+.laundryPage {
+  width: 100%;
+  padding: 28px;
+  border-radius: 34px;
+
+  background: rgba(255, 255, 255, 0.74);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+
+  box-shadow:
+    0 24px 70px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+}
+
+.laundryPageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+
+  margin-bottom: 20px;
+}
+
+.laundryPageHeader h2 {
+  margin: 0;
+
+  color: #0f172a;
+
+  font-size: 38px;
+  font-weight: 950;
+  letter-spacing: -1.4px;
+  line-height: 1;
+}
+
+.laundryPageHeader span {
+  display: block;
+
+  margin-top: 10px;
+
+  color: #64748b;
+
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.laundryPageHeader > strong {
+  padding: 11px 16px;
+
+  border-radius: 999px;
+
+  background: #fff7ed;
+  color: #c2410c;
+
+  border: 1px solid rgba(251, 146, 60, 0.24);
+
+  font-size: 14px;
+  font-weight: 950;
+
+  white-space: nowrap;
+}
+
+.markAllWashedBtn {
+  width: 100%;
+
+  margin-bottom: 20px;
+  padding: 15px 18px;
+
+  border: none;
+  border-radius: 20px;
+
+  background: #111827;
+  color: white;
+
+  font-size: 15px;
+  font-weight: 950;
+
+  cursor: pointer;
+
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.18);
+}
+
+.markAllWashedBtn:hover {
+  transform: translateY(-2px);
+  background: #020617;
+}
+
+.laundryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.laundryItemCard {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 14px;
+
+  padding: 14px;
+
+  border-radius: 26px;
+
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.9);
+}
+
+.laundryItemImage,
+.laundryItemPlaceholder {
+  width: 92px;
+  height: 112px;
+
+  border-radius: 20px;
+}
+
+.laundryItemImage {
+  object-fit: cover;
+}
+
+.laundryItemPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    radial-gradient(circle at 20% 20%, rgba(251, 146, 60, 0.22), transparent 32%),
+    linear-gradient(135deg, #fff7ed, #f8fafc);
+
+  font-size: 30px;
+}
+
+.laundryItemInfo {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.laundryItemInfo span {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #64748b;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.laundryItemInfo h3 {
+  margin: 0;
+
+  color: #0f172a;
+
+  font-size: 18px;
+  font-weight: 950;
+  line-height: 1.1;
+
+  overflow-wrap: anywhere;
+}
+
+.laundryItemColors {
+  display: flex;
+  align-items: center;
+  padding-left: 6px;
+}
+
+.laundryItemColor {
+  width: 18px;
+  height: 18px;
+
+  margin-left: -6px;
+
+  border-radius: 999px;
+
+  border: 2px solid #ffffff;
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.16);
+}
+
+.laundryItemColor:first-child {
+  margin-left: 0;
+}
+
+.markWashedBtn {
+  width: 100%;
+
+  padding: 11px 12px;
+
+  border: none;
+  border-radius: 16px;
+
+  background: #ecfdf5;
+  color: #15803d;
+
+  font-size: 13px;
+  font-weight: 950;
+
+  cursor: pointer;
+}
+
+.markWashedBtn:hover {
+  transform: translateY(-2px);
+  background: #dcfce7;
+}
+
+.laundryEmpty {
+  padding: 46px 24px;
+
+  border-radius: 28px;
+
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+
+  text-align: center;
+}
+
+.laundryEmpty div {
+  font-size: 44px;
+  margin-bottom: 14px;
+}
+
+.laundryEmpty h3 {
+  margin: 0 0 8px;
+
+  color: #0f172a;
+
+  font-size: 26px;
+  font-weight: 950;
+}
+
+.laundryEmpty p {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 14px;
+  font-weight: 750;
+}
+
+@media (max-width: 1100px) {
+  .laundryGrid {
+    grid-template-columns: repeat(2, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .laundryPageHeader {
+    flex-direction: column;
+  }
+
+  .laundryGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
 
 
 
