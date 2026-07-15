@@ -105,6 +105,8 @@ export default function App() {
   const [selectedHistoryDate, setSelectedHistoryDate] = useState(null);
   const [suggestedOutfit, setSuggestedOutfit] = useState(null);
   const [outfitSuggestionNotice, setOutfitSuggestionNotice] = useState("");
+  const [notesOutfit, setNotesOutfit] = useState(null);
+  const [noteDraft, setNoteDraft] = useState("");
 
   const [outfitHistory, setOutfitHistory] = useState(() => {
     const saved = localStorage.getItem("outfit-history");
@@ -1071,6 +1073,27 @@ export default function App() {
     localStorage.setItem("outfits-masculinos", JSON.stringify(updatedOutfits));
   }
 
+  function openOutfitNotes(outfit) {
+    setNotesOutfit(outfit);
+    setNoteDraft(outfit.notes || "");
+  }
+
+  function saveOutfitNotes() {
+    if (!notesOutfit) return;
+
+    const updatedOutfits = outfits.map((outfit) =>
+      outfit.id === notesOutfit.id
+        ? { ...outfit, notes: noteDraft }
+        : outfit
+    );
+
+    setOutfits(updatedOutfits);
+    localStorage.setItem("outfits-masculinos", JSON.stringify(updatedOutfits));
+
+    setNotesOutfit(null);
+    setNoteDraft("");
+  }
+
   
 
   return (
@@ -1805,7 +1828,21 @@ export default function App() {
                               <p>{outfit.function === "Outro" ? outfit.customFunction : outfit.function}</p>
                             </div>
 
-                            <span>{outfit.style}</span>
+                            <div className="cardTopActions">
+                              <button
+                                type="button"
+                                className={`noteIconBtn ${outfit.notes?.trim() ? "hasNote" : ""}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openOutfitNotes(outfit);
+                                }}
+                                title={outfit.notes?.trim() ? "Ver nota" : "Adicionar nota"}
+                              >
+                                📝
+                              </button>
+
+                              <span>{outfit.style}</span>
+                            </div>
                           </div>
 
                           {outfit.lastUsedAt && (
@@ -2151,6 +2188,70 @@ export default function App() {
                     </div>
                   );
                 })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {notesOutfit && (
+          <div
+            className="notesOverlay"
+            onClick={() => setNotesOutfit(null)}
+          >
+            <div
+              className="notesModal"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="notesHeader">
+                <div>
+                  <span>NOTAS DO LOOK</span>
+                  <h2>{notesOutfit.title}</h2>
+                  <p>Guarda lembretes, ajustes ou ideias para este outfit.</p>
+                </div>
+
+                <button
+                  type="button"
+                  className="notesClose"
+                  onClick={() => setNotesOutfit(null)}
+                >
+                  ×
+                </button>
+              </div>
+
+              <textarea
+                className="notesTextarea"
+                placeholder="Ex: fica melhor com Air Force brancas, usar com casaco verde..."
+                value={noteDraft}
+                onChange={(e) => setNoteDraft(e.target.value)}
+              />
+
+              <div className="notesFooter">
+                <span>{noteDraft.length} caracteres</span>
+
+                <button
+                  type="button"
+                  onClick={() => setNoteDraft("")}
+                >
+                  Limpar
+                </button>
+              </div>
+
+              <div className="notesActions">
+                <button
+                  type="button"
+                  className="notesCancel"
+                  onClick={() => setNotesOutfit(null)}
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  type="button"
+                  className="notesSave"
+                  onClick={saveOutfitNotes}
+                >
+                  Guardar nota
+                </button>
               </div>
             </div>
           </div>

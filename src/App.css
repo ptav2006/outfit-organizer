@@ -4602,6 +4602,299 @@ body {
   }
 }
 
+.cardTopActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.cardTopActions > span {
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: #0f172a;
+  color: white;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.noteIconBtn {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 16px;
+
+  background: #f8fafc;
+  color: #64748b;
+
+  font-size: 17px;
+
+  cursor: pointer;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    0 8px 18px rgba(15, 23, 42, 0.06);
+}
+
+.noteIconBtn:hover {
+  transform: translateY(-2px);
+  background: #ffffff;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.1);
+}
+
+.noteIconBtn.hasNote {
+  background: #eef2ff;
+  color: #1d4ed8;
+  box-shadow:
+    0 0 0 1px rgba(37, 99, 235, 0.12),
+    0 12px 26px rgba(37, 99, 235, 0.12);
+}
+
+.notesOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(10px);
+
+  animation: overlayIn 0.2s ease both;
+}
+
+.notesModal {
+  width: min(520px, 100%);
+
+  padding: 26px;
+  border-radius: 32px;
+
+  background: #fffdf9;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.35);
+
+  animation: previewIn 0.24s ease both;
+}
+
+.notesHeader {
+  position: relative;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  margin-bottom: 22px;
+  text-align: center;
+}
+
+.notesHeader > div {
+  width: 100%;
+  padding: 0 58px;
+}
+
+.notesHeader span {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #93c5fd;
+
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 3px;
+}
+
+.notesHeader h2 {
+  margin: 0;
+
+  color: #0f172a;
+
+  font-size: 30px;
+  font-weight: 950;
+  line-height: 1.05;
+  letter-spacing: -1px;
+}
+
+.notesHeader p {
+  margin: 10px 0 0;
+
+  color: #64748b;
+
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.notesClose {
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+
+  border: none;
+  border-radius: 999px;
+
+  background: #f1f5f9;
+  color: #111827;
+
+  font-size: 28px;
+  line-height: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+}
+
+.notesTextarea {
+  width: 100%;
+  min-height: 170px;
+
+  padding: 16px 18px;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 22px;
+
+  background: rgba(255, 255, 255, 0.96);
+  color: #0f172a;
+
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.5;
+
+  outline: none;
+  resize: vertical;
+}
+
+.notesTextarea::placeholder {
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.notesTextarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
+}
+
+.notesFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  margin-top: 10px;
+}
+
+.notesFooter span {
+  color: #94a3b8;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.notesFooter button {
+  padding: 8px 12px;
+
+  border: none;
+  border-radius: 999px;
+
+  background: #f1f5f9;
+  color: #64748b;
+
+  font-size: 12px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+.notesActions {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 12px;
+
+  margin-top: 22px;
+}
+
+.notesCancel,
+.notesSave {
+  padding: 15px 18px;
+
+  border: none;
+  border-radius: 18px;
+
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.notesCancel {
+  background: #f1f5f9;
+  color: #111827;
+}
+
+.notesSave {
+  background: #111827;
+  color: white;
+}
+
+.notesSave:hover {
+  background: #020617;
+}
+
+.singleColumnLayout .cardTopActions > span {
+  padding: 9px 14px;
+  font-size: 13px;
+}
+
+.singleColumnLayout .noteIconBtn {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border-radius: 14px;
+}
+
+@media (max-width: 650px) {
+  .notesActions {
+    grid-template-columns: 1fr;
+  }
+
+  .cardTopActions {
+    align-items: flex-start;
+  }
+}
+
+.notesOverlay,
+.suggestOutfitOverlay,
+.historyDayOverlay,
+.useTodayOverlay,
+.editClosetOverlay,
+.imageOverlay {
+  z-index: 5000;
+}
+
+.notesModal,
+.suggestOutfitModal,
+.historyDayModal,
+.useTodayModal,
+.editClosetModal,
+.imagePreviewModal {
+  position: relative;
+  z-index: 5001;
+}
+
 
 
 
