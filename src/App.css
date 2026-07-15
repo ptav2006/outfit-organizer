@@ -3376,14 +3376,16 @@ body {
 }
 
 .singleColumnLayout .cards {
-  grid-template-columns: repeat(4, minmax(220px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(3, minmax(260px, 1fr));
+  gap: 24px;
   padding: 28px 18px 40px;
 }
 
 .singleColumnLayout .card > img,
 .singleColumnLayout .card > .placeholder {
-  height: 220px;
+  height: 330px;
+  object-fit: cover;
+  object-position: top center;
 }
 
 .singleColumnLayout .cardBody {
@@ -3425,7 +3427,7 @@ body {
 
 @media (max-width: 1300px) {
   .singleColumnLayout .cards {
-    grid-template-columns: repeat(3, minmax(220px, 1fr));
+    grid-template-columns: repeat(3, minmax(240px, 1fr));
   }
 }
 
