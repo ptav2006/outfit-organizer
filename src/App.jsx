@@ -100,6 +100,12 @@ export default function App() {
   const [previewClosetItem, setPreviewClosetItem] = useState(null);
   const [usingTodayOutfit, setUsingTodayOutfit] = useState(null);
   const [todayLaundryPieces, setTodayLaundryPieces] = useState([]);
+  const [selectedHistoryDate, setSelectedHistoryDate] = useState(null);
+
+  const [outfitHistory, setOutfitHistory] = useState(() => {
+    const saved = localStorage.getItem("outfit-history");
+    return saved ? JSON.parse(saved) : [];
+  });
 
   const [editingClosetItem, setEditingClosetItem] = useState(null);
 
@@ -267,6 +273,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("outfits-masculinos", JSON.stringify(outfits));
   }, [outfits]);
+
+  useEffect(() => {
+    localStorage.setItem("outfit-history", JSON.stringify(outfitHistory));
+  }, [outfitHistory]);
 
   function addPiece() {
     setForm({
@@ -474,6 +484,26 @@ export default function App() {
     const selectedPieces = new Set(todayLaundryPieces);
     const usedAt = new Date().toISOString();
 
+    const laundryPiecesNames = (usingTodayOutfit.pieces || [])
+      .filter((piece) => selectedPieces.has(getPieceKey(piece)))
+      .map((piece) => ({
+        name: piece.name,
+        category: piece.category,
+      }));
+
+    const historyEntry = {
+      id: crypto.randomUUID(),
+      date: usedAt,
+      outfitId: usingTodayOutfit.id,
+      outfitTitle: usingTodayOutfit.title,
+      outfitStyle: usingTodayOutfit.style,
+      outfitFunction:
+        usingTodayOutfit.function === "Outro"
+          ? usingTodayOutfit.customFunction
+          : usingTodayOutfit.function,
+      laundryPieces: laundryPiecesNames,
+    };
+
     const updatedOutfits = outfits.map((outfit) => ({
       ...outfit,
 
@@ -490,6 +520,8 @@ export default function App() {
     }));
 
     setOutfits(updatedOutfits);
+    setOutfitHistory((prev) => [historyEntry, ...prev]);
+
     localStorage.setItem("outfits-masculinos", JSON.stringify(updatedOutfits));
 
     setUsingTodayOutfit(null);
@@ -813,6 +845,10 @@ export default function App() {
     if (tab === "laundry") {
       setClosetFilter("Para lavar");
     }
+
+    if (tab === "history") {
+      setSelectedHistoryDate(null);
+    }
   }
 
   const showOutfitsArea = activeTab === "looks";
@@ -821,6 +857,61 @@ export default function App() {
     activeTab === "closet" ||
     activeTab === "laundry" ||
     (activeTab === "create" && showCloset);
+  
+  const showHistoryArea = activeTab === "history";
+
+  function getHistoryDateKey(dateString) {
+    const date = new Date(dateString);
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  }
+
+  function formatHistoryDate(dateKey) {
+    const [year, month, day] = dateKey.split("-");
+
+    return new Date(year, month - 1, day).toLocaleDateString("pt-PT", {
+      weekday: "long",
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+  }
+
+  function formatHistoryTime(dateString) {
+    return new Date(dateString).toLocaleTimeString("pt-PT", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+
+  const historyByDate = useMemo(() => {
+    const grouped = {};
+
+    outfitHistory.forEach((entry) => {
+      const dateKey = getHistoryDateKey(entry.date);
+
+      if (!grouped[dateKey]) {
+        grouped[dateKey] = [];
+      }
+
+      grouped[dateKey].push(entry);
+    });
+
+    return Object.entries(grouped)
+      .sort(([dateA], [dateB]) => dateB.localeCompare(dateA))
+      .map(([date, entries]) => ({
+        date,
+        entries,
+      }));
+  }, [outfitHistory]);
+
+  const selectedHistoryGroup = historyByDate.find(
+    (group) => group.date === selectedHistoryDate
+  );
 
   
 
@@ -873,6 +964,14 @@ export default function App() {
             onClick={() => handleTabChange("laundry")}
           >
             <span>🧺 Lavandaria</span>
+          </button>
+
+          <button
+            type="button"
+            className={`appTab ${activeTab === "history" ? "active" : ""}`}
+            onClick={() => handleTabChange("history")}
+          >
+            <span>📅 Histórico</span>
           </button>
         </nav>
 
@@ -1081,7 +1180,7 @@ export default function App() {
             </section>
           )}
 
-          {(showOutfitsArea || showClosetArea) && (
+          {(showOutfitsArea || showClosetArea || showHistoryArea) && (
             <section className="content">
               {showOutfitsArea && (
                 <div className="toolbar">
@@ -1096,6 +1195,50 @@ export default function App() {
                     options={["Todos", "Favoritos", ...outfitStyles]}
                     onChange={(value) => setFilter(value)}
                   />
+                </div>
+              )}
+
+              {showHistoryArea && (
+                <div className="historyPage">
+                  <div className="historyPageHeader">
+                    <div>
+                      <p className="tag">HISTÓRICO</p>
+                      <h2>Outfits usados</h2>
+                      <span>Consulta o que usaste em cada dia.</span>
+                    </div>
+
+                    <strong>{outfitHistory.length} registos</strong>
+                  </div>
+
+                  {historyByDate.length === 0 ? (
+                    <div className="historyPageEmpty">
+                      <div>📅</div>
+                      <h3>Ainda não tens histórico</h3>
+                      <p>Quando carregares em “Usar hoje”, o registo aparece aqui.</p>
+                    </div>
+                  ) : (
+                    <div className="historyDateGrid">
+                      {historyByDate.map((group) => (
+                        <button
+                          key={group.date}
+                          type="button"
+                          className="historyDateCard"
+                          onClick={() => setSelectedHistoryDate(group.date)}
+                        >
+                          <div>
+                            <strong>{formatHistoryDate(group.date)}</strong>
+                            <span>
+                              {group.entries.length === 1
+                                ? "1 outfit usado"
+                                : `${group.entries.length} outfits usados`}
+                            </span>
+                          </div>
+
+                          <span className="historyDateArrow">›</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -1653,6 +1796,91 @@ export default function App() {
                 >
                   Guardar alterações
                 </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {selectedHistoryGroup && (
+          <div
+            className="historyDayOverlay"
+            onClick={() => setSelectedHistoryDate(null)}
+          >
+            <div
+              className="historyDayModal"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="historyDayHeader">
+                <div>
+                  <span>HISTÓRICO DO DIA</span>
+                  <h2>{formatHistoryDate(selectedHistoryGroup.date)}</h2>
+                  <p>
+                    {selectedHistoryGroup.entries.length === 1
+                      ? "1 outfit usado neste dia."
+                      : `${selectedHistoryGroup.entries.length} outfits usados neste dia.`}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  className="historyDayClose"
+                  onClick={() => setSelectedHistoryDate(null)}
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="historyDayList">
+                {selectedHistoryGroup.entries.map((entry) => {
+                  const currentOutfit = outfits.find(
+                    (outfit) => outfit.id === entry.outfitId
+                  );
+
+                  return (
+                    <div className="historyDayItem" key={entry.id}>
+                      {currentOutfit?.image ? (
+                        <img
+                          src={currentOutfit.image}
+                          alt={entry.outfitTitle}
+                          className="historyDayImage"
+                        />
+                      ) : (
+                        <div className="historyDayPlaceholder">👕</div>
+                      )}
+
+                      <div className="historyDayInfo">
+                        <div className="historyDayTop">
+                          <div>
+                            <h3>{entry.outfitTitle}</h3>
+                            <p>
+                              {entry.outfitFunction} · {entry.outfitStyle}
+                            </p>
+                          </div>
+
+                          <span>{formatHistoryTime(entry.date)}</span>
+                        </div>
+
+                        {entry.laundryPieces?.length > 0 ? (
+                          <div className="historyDayLaundry">
+                            <strong>🧺 Peças enviadas para lavar</strong>
+
+                            <ul>
+                              {entry.laundryPieces.map((piece, index) => (
+                                <li key={`${piece.name}-${index}`}>
+                                  {piece.name} · {piece.category}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ) : (
+                          <p className="historyDayNoLaundry">
+                            Sem peças enviadas para lavar.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
