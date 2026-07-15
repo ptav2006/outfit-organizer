@@ -173,8 +173,15 @@ export default function App() {
     const combined = [...unique, ...manualItems];
 
     combined.sort((a, b) => {
-      if (a.unavailable === b.unavailable) return 0;
-      return a.unavailable ? 1 : -1;
+      if (a.unavailable !== b.unavailable) {
+        return a.unavailable ? 1 : -1;
+      }
+
+      if (a.favorite !== b.favorite) {
+        return a.favorite ? -1 : 1;
+      }
+
+      return 0;
     });
 
     return combined;
@@ -841,6 +848,11 @@ export default function App() {
       return matchesSearch && matchesFilter;
     });
 
+    result.sort((a, b) => {
+      if (a.favorite === b.favorite) return 0;
+      return a.favorite ? -1 : 1;
+    });
+
     return result;
   }, [outfits, search, filter]);
 
@@ -894,6 +906,7 @@ export default function App() {
     (activeTab === "create" && showCloset);
   
   const showHistoryArea = activeTab === "history";
+  const favoriteOutfitsCount = outfits.filter((outfit) => outfit.favorite).length;
 
   function getHistoryDateKey(dateString) {
     const date = new Date(dateString);
@@ -1288,8 +1301,8 @@ export default function App() {
                   />
 
                   <CustomSelect
-                    value={filter}
-                    options={["Todos", "Favoritos", "Não usados recentemente", ...outfitStyles]}
+                    value={filter === "Favoritos" ? "Todos" : filter}
+                    options={["Todos", "Não usados recentemente", ...outfitStyles]}
                     onChange={(value) => setFilter(value)}
                   />
 
@@ -1299,6 +1312,28 @@ export default function App() {
                     onClick={suggestOutfit}
                   >
                     ✨ Escolher por mim
+                  </button>
+                </div>
+              )}
+
+              {showOutfitsArea && favoriteOutfitsCount > 0 && (
+                <div className="favoritesOverview">
+                  <div>
+                    <span>❤️ Favoritos</span>
+                    <strong>
+                      {favoriteOutfitsCount === 1
+                        ? "1 outfit favorito"
+                        : `${favoriteOutfitsCount} outfits favoritos`}
+                    </strong>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFilter(filter === "Favoritos" ? "Todos" : "Favoritos")
+                    }
+                  >
+                    {filter === "Favoritos" ? "Ver todos" : "Ver favoritos"}
                   </button>
                 </div>
               )}
