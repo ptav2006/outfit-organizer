@@ -462,9 +462,25 @@ button {
 }
 
 .deleteSmall {
-  background: transparent;
+  width: fit-content;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 12px 0 0 auto;
+  padding: 8px 13px;
+
+  border-radius: 999px;
+  border: 1px solid rgba(220, 38, 38, 0.14);
+
+  background: rgba(254, 226, 226, 0.72);
   color: #dc2626;
-  padding: 6px 0;
+
+  font-size: 13px;
+  font-weight: 900;
+
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
 }
 
 .toolbar {
@@ -1768,6 +1784,27 @@ body {
   grid-template-columns: 1fr 150px 124px;
   align-items: end;
   gap: 12px;
+}
+
+.layout:not(.formOnlyLayout):not(.singleColumnLayout) .panel .pieceControls {
+  grid-template-columns: 1fr 1fr;
+}
+
+.layout:not(.formOnlyLayout):not(.singleColumnLayout) .panel .pieceControls .controlGroup:first-child {
+  grid-column: 1 / -1;
+}
+
+.layout:not(.formOnlyLayout):not(.singleColumnLayout) .panel .colorGroup {
+  align-items: stretch;
+}
+
+.layout:not(.formOnlyLayout):not(.singleColumnLayout) .panel .colorGroup .controlLabel {
+  text-align: center;
+}
+
+.layout:not(.formOnlyLayout):not(.singleColumnLayout) .panel .pieceImageUpload {
+  width: 100%;
+  min-width: 0;
 }
 
 .controlGroup {

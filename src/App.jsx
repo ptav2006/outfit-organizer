@@ -15,7 +15,8 @@ const outfitStyles = [
   "Streetwear",
   "Smart Casual",
   "Desportivo",
-  "Minimalista"
+  "Minimalista",
+  "Outro"
 ];
 
 const outfitFunctions = [
@@ -292,6 +293,7 @@ export default function App() {
   const [form, setForm] = useState({
     title: "",
     style: "Casual",
+    customStyle: "",
     function: "Universidade",
     customFunction: "",
     image: "",
@@ -463,12 +465,36 @@ export default function App() {
   }
 
   function editOutfit(outfit) {
-    setForm(outfit);
+    setForm({
+      ...outfit,
+      pieces:
+        outfit.pieces?.length > 0
+          ? outfit.pieces
+          : [
+              {
+                name: "",
+                category: "T-shirt",
+                colors: [],
+                tempColor: "#ffffff",
+                image: "",
+                unavailable: false,
+              },
+            ],
+    });
+
     setEditingId(outfit.id);
 
     setClosedSuggestions(
       (outfit.pieces || []).map((_, index) => index)
     );
+
+    setActiveTab("create");
+    setShowCloset(false);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   }
 
   function toggleOutfitPieces(outfitId) {
@@ -528,7 +554,7 @@ export default function App() {
       date: usedAt,
       outfitId: usingTodayOutfit.id,
       outfitTitle: usingTodayOutfit.title,
-      outfitStyle: usingTodayOutfit.style,
+      outfitStyle: getOutfitStyleLabel(usingTodayOutfit),
       outfitFunction:
         usingTodayOutfit.function === "Outro"
           ? usingTodayOutfit.customFunction
@@ -740,9 +766,13 @@ export default function App() {
         function: "Universidade",
         customFunction: "",
         style: "Casual",
+        customStyle: "",
         image: "",
         pieces: [{ name: "", category: "T-shirt", colors: [], tempColor: "#ffffff", image: "", unavailable: false }]
       });
+
+      setActiveTab("looks");
+      setShowCloset(false);
 
       return;
     }
@@ -770,6 +800,7 @@ export default function App() {
       function: "Universidade",
       customFunction: "",
       style: "Casual",
+      customStyle: "",
       image: "",
       pieces: [{ name: "", category: "T-shirt", colors: [], tempColor: "#ffffff", image: "", unavailable: false }]
     });
@@ -1140,6 +1171,12 @@ export default function App() {
     }, 1600);
   }
 
+  function getOutfitStyleLabel(outfit) {
+    return outfit.style === "Outro"
+      ? outfit.customStyle || "Outro"
+      : outfit.style;
+  }
+
   
 
   return (
@@ -1251,7 +1288,13 @@ export default function App() {
                   <CustomSelect
                     value={form.style}
                     options={outfitStyles}
-                    onChange={(value) => setForm({ ...form, style: value })}
+                    onChange={(value) =>
+                      setForm({
+                        ...form,
+                        style: value,
+                        customStyle: value === "Outro" ? form.customStyle : "",
+                      })
+                    }
                   />
 
                   <CustomSelect
@@ -1261,13 +1304,23 @@ export default function App() {
                   />
                 </div>
 
-              {form.function === "Outro" && (
-                <input
-                  placeholder="Escreve para que é o outfit"
-                  value={form.customFunction}
-                  onChange={e => setForm({ ...form, customFunction: e.target.value })}
-                />
-              )}
+                {form.style === "Outro" && (
+                  <input
+                    placeholder="Escreve o estilo do look"
+                    value={form.customStyle}
+                    onChange={(e) =>
+                      setForm({ ...form, customStyle: e.target.value })
+                    }
+                  />
+                )}
+
+                {form.function === "Outro" && (
+                  <input
+                    placeholder="Escreve para que é o outfit"
+                    value={form.customFunction}
+                    onChange={e => setForm({ ...form, customFunction: e.target.value })}
+                  />
+                )}
 
                 <label className={`upload ${form.image ? "uploadSelected" : ""}`}>
                   <input type="file" accept="image/*" onChange={handleImage} />
@@ -1414,7 +1467,7 @@ export default function App() {
                         className="deleteSmall"
                         onClick={() => removePiece(index)}
                       >
-                        Remover peça
+                        × Remover
                       </button>
                     )}
                   </div>
@@ -2028,7 +2081,7 @@ export default function App() {
                                 📝
                               </button>
 
-                              <span>{outfit.style}</span>
+                              <span>{getOutfitStyleLabel(outfit)}</span>
                             </div>
                           </div>
 
